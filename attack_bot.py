@@ -73,7 +73,7 @@ async def on_message(message):
                 await message.channel.send(f"{message.author.mention}, 重複しています。")
             
             elif (str("4_5") in tokkou)  and (str("5") in tokkou):
-                await message.channel.send("不可能")
+                await message.channel.send("4_5と5は同時に装着できません")
 
             else:    
                 if str('1') in tokkou:
@@ -97,7 +97,7 @@ async def on_message(message):
                 #####
                 alldmg = dmg * os_power * tokkou_add
                 print(alldmg)
-                await message.channel.send(f"攻撃力：{alldmg}")
+                await message.channel.send(f"攻撃力：{alldmg}倍")
         else:
             await message.channel.send(f"{message.author.mention}, 間違っています。")
 
