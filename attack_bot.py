@@ -107,9 +107,6 @@ async def on_message(message):
             await message.channel.send(f"OS増加分：{os_power}倍")
             
             #####
-        else:
-            print("a")
-
         if len(tokkou) == 0:
             print("0")
             dmg_all = dmg * os_power
