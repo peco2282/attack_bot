@@ -25,7 +25,7 @@ async def on_message(message):
         tokkou=msg[3:]
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
-                if os == 0:
+        if os == 0:
             os_power = 1.0
         elif 13 >=os >= 1:
             if 1 <= os <= 9:
