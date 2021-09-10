@@ -25,7 +25,7 @@ async def on_message(message):
         tokkou=msg[3:]
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
-        if os == 0:
+                if os == 0:
             os_power = 1.0
         elif 13 >=os >= 1:
             if 1 <= os <= 9:
@@ -48,12 +48,63 @@ async def on_message(message):
             elif os == 13:
                 os_power = 2.26701
                 await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 14:
+                os_power = 2.29829
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 15:
+                os_power = 2.32114
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 16:
+                os_power = 2.33856
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 17:
+                os_power = 2.35227
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 18:
+                os_power = 2.36334
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 19:
+                os_power = 2.37246
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 20:
+                os_power = 2.38011
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 21:
+                os_power = 2.38611
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 22:
+                os_power = 2.39221
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 23:
+                os_power = 2.39707
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 24:
+                os_power = 2.40135
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 25:
+                os_power = 2.40513
+                await message.channel.send(f"OS増加分：{os_power}倍")
+            
+            elif os == 26:
+                os_power = 2.40849
+                await message.channel.send(f"OS増加分：{os_power}倍")
 
-        elif os >= 14:
+        elif os >= 27:
             await message.channel.send(f"すみませんまだ作成中です")
             os_power = 1.0
             await message.channel.send(f"OS増加分：{os_power}倍")
-            
             
             #####
         else:
@@ -62,7 +113,7 @@ async def on_message(message):
         if len(tokkou) == 0:
             print("0")
             dmg_all = dmg * os_power
-            await message.channel.send(f"攻撃力：{dmg_all}")
+            await message.channel.send(f"__**攻撃力：{dmg_all}**__")
 
         elif 1 <= len(tokkou) <= 5:
             tokkou_list = list(set(tokkou))
