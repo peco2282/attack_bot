@@ -28,7 +28,7 @@ async def on_message(message):
         await message.channel.send(f"特攻：{tokkou}")
         if os == 0:
             os_power = 1.0
-        elif 26 >= os >= 1:
+        elif 60 >= os >= 1:
             if 1 <= os <= 9:
                 os_power = 0.09 * os + 1.0
                 await message.channel.send(f"OS増加分：{os_power}倍")
