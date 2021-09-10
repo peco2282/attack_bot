@@ -101,7 +101,7 @@ async def on_message(message):
                 os_power = 2.40849
                 await message.channel.send(f"OS増加分：{os_power}倍")
 
-        elif os >= 27:
+        else:
             await message.channel.send(f"すみませんまだ作成中です")
             os_power = 1.0
             await message.channel.send(f"OS増加分：{os_power}倍")
