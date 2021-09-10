@@ -30,24 +30,24 @@ async def on_message(message):
         elif 13 >=os >= 1:
             if 1 <= os <= 9:
                 os_power =  0.09 * os + 1.0
-                await message.channel.send(f"OS増加分：{os_power}")
+                await message.channel.send(f"OS増加分：{os_power}倍")
                 
             
             elif os == 10:
                 os_power = 2.02659
-                await message.channel.send(f"OS増加分：{os_power}")
+                await message.channel.send(f"OS増加分：{os_power}倍")
             
             elif os == 11:
                 os_power = 2.15072
-                await message.channel.send(f"OS増加分：{os_power}")
+                await message.channel.send(f"OS増加分：{os_power}倍")
             
             elif os == 12:
                 os_power = 2.22172
-                await message.channel.send(f"OS増加分：{os_power}")
+                await message.channel.send(f"OS増加分：{os_power}倍")
                         
             elif os == 13:
                 os_power = 2.26701
-                await message.channel.send(f"OS増加分：{os_power}")
+                await message.channel.send(f"OS増加分：{os_power}倍")
 
         elif os >= 14:
             await message.channel.send(f"すみませんまだ作成中です")
@@ -97,7 +97,7 @@ async def on_message(message):
                 #####
                 alldmg = dmg * os_power * tokkou_add
                 print(alldmg)
-                await message.channel.send(f"攻撃力：{alldmg}倍")
+                await message.channel.send(f"攻撃力：{alldmg}")
         else:
             await message.channel.send(f"{message.author.mention}, 間違っています。")
 
