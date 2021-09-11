@@ -1,3 +1,4 @@
+
 import discord
 
 client = discord.Client()
@@ -230,7 +231,6 @@ async def dmgcalc(message, os, dmg, tokkou):
         alldmg = dmg * os_power
         return alldmg
 
-
     elif 1 <= len(tokkou) <= 5:
         tokkou_list = list(set(tokkou))
         tokkou_add = 1
@@ -266,12 +266,10 @@ async def dmgcalc(message, os, dmg, tokkou):
             alldmg = dmg * os_power * tokkou_add
             print(alldmg)
             return alldmg
-    
+
     else:
         await message.channel.send(f"{message.author.mention}, 間違っています。")
-        return alldmg
 
-    
 
 @client.event
 async def on_ready():
@@ -298,7 +296,6 @@ async def on_message(message):
         await message.channel.send(f"__**攻撃力：{alldmg:.3f}**__")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
-        
 
     if message.content.startswith(".job1"):
         # ソルジャー・アーサー・マジシャン
@@ -307,9 +304,9 @@ async def on_message(message):
         dmg = float(msg_job[2])
         os = int(msg_job[3])
         tokkou = msg_job[4:]
-        alldmg = dmgcalc(message, os, dmg, tokkou)
-        a = 1.05 * float(alldmg)
-        b = 0.98 * float(alldmg)
+        j_dmg = dmgcalc(message, os, dmg, tokkou)
+        a = 1.05 * float(j_dmg)
+        b = 0.98 * float(j_dmg)
 
         if job == 's':
             await message.channel.send(f"__**攻撃力：剣 {a:.3f}, 弓 {b:.3f}, 魔法 {b:.3f}**__")
@@ -326,8 +323,6 @@ async def on_message(message):
             await message.channel.send(f"OS={os}")
             await message.channel.send(f"特攻：{tokkou}")
             await message.channel.send(f"職業：マジシャン")
-
-
 
     if message.content.startswith(".help"):
         embed = discord.Embed(title="コマンド一覧", color=discord.Colour.blue())
