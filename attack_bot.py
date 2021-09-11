@@ -305,19 +305,21 @@ async def on_message(message):
         os = int(msg_job[3])
         tokkou = msg_job[4:]
         alldmg = dmgcalc(message, os, dmg, tokkou)
+        a = 1.05 * float(alldmg)
+        b = 0.98 * float(alldmg)
 
         if job == 's':
-            await message.channel.send(f"__**攻撃力：剣 {1.05 * float(alldmg):.3f}, 弓 {0.98 * float(alldmg):.3f}, 魔法 {0.98 * float(alldmg):.3f}**__")
+            await message.channel.send(f"__**攻撃力：剣 {a:.3f}, 弓 {b:.3f}, 魔法 {b:.3f}**__")
             await message.channel.send(f"OS={os}")
             await message.channel.send(f"特攻：{tokkou}")
             await message.channel.send(f"職業：ソルジャー")
         elif job == 'a':
-            await message.channel.send(f"__**攻撃力：剣 {0.98 * float(alldmg):.3f}, 弓 {1.05 * float(alldmg):.3f}, 魔法 {0.98 * float(alldmg):.3f}**__")
+            await message.channel.send(f"__**攻撃力：剣 {b:.3f}, 弓 {a:.3f}, 魔法 {b:.3f}**__")
             await message.channel.send(f"OS={os}")
             await message.channel.send(f"特攻：{tokkou}")
             await message.channel.send(f"職業：アーチャー")
         elif job == 'm':
-            await message.channel.send(f"__**攻撃力：剣 {0.98 * float(alldmg):.3f}, 弓 {0.98 * float(alldmg):.3f}, 魔法 {1.05 * float(alldmg):.3f}**__")
+            await message.channel.send(f"__**攻撃力：剣 {b:.3f}, 弓 {b:.3f}, 魔法 {a:.3f}**__")
             await message.channel.send(f"OS={os}")
             await message.channel.send(f"特攻：{tokkou}")
             await message.channel.send(f"職業：マジシャン")
