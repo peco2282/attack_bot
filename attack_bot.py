@@ -282,7 +282,7 @@ async def on_message(message):
                 #####
                 alldmg = dmg * os_power * tokkou_add
                 print(alldmg)
-                await message.channel.send(f"攻撃力：{alldmg:.3f}")
+                await message.channel.send(f"__**攻撃力：{dmg_all:.3f}**__")
         else:
             await message.channel.send(f"{message.author.mention}, 間違っています。")
 
