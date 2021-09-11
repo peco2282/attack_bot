@@ -228,6 +228,8 @@ async def dmgcalc(message, os, dmg, tokkou):
         print("0")
         tokkou_add = 1
         alldmg = dmg * os_power
+        return alldmg
+
 
     elif 1 <= len(tokkou) <= 5:
         tokkou_list = list(set(tokkou))
@@ -263,12 +265,13 @@ async def dmgcalc(message, os, dmg, tokkou):
                 #####
             alldmg = dmg * os_power * tokkou_add
             print(alldmg)
-            
+            return alldmg
+    
     else:
         await message.channel.send(f"{message.author.mention}, 間違っています。")
-    
-    return alldmg
+        return alldmg
 
+    
 
 @client.event
 async def on_ready():
