@@ -298,4 +298,4 @@ async def on_message(message):
         embed.add_field(name='ヘルプ', value='.help', inline=False)
         await message.channel.send(embed=embed)
 
-client.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
+client.run()
