@@ -229,7 +229,6 @@ async def calc(message, dmg, os, tokkou):
     elif 1 <= len(tokkou) <= 5:
         tokkou_list = list(set(tokkou))
         tokkou_add = 1.0
-        print(len(tokkou))
 
         if len(tokkou) != len(tokkou_list):
             print("$")
@@ -258,7 +257,6 @@ async def calc(message, dmg, os, tokkou):
                 tokkou_add *= 1.55
                 #####
             alldmg = dmg * os_power * tokkou_add
-            print(alldmg)
             return alldmg
     else:
         await message.channel.send(f"{message.author.mention}, 間違っています。")
@@ -284,7 +282,6 @@ async def on_message(message):
         os = int(msg[2])
         tokkou = msg[3:]
         attack = await calc(message, dmg, os, tokkou)
-        aa = type(attack)
         await message.channel.send(f"{attack}")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
@@ -300,8 +297,6 @@ async def on_message(message):
         tokkou = msg_job[4:]
         job_1 = ''
         attack =await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
         a = float(attack) * 1.05
         b = float(attack) * 0.98
         if str(job) == 's':
@@ -332,8 +327,6 @@ async def on_message(message):
         tokkou = msg_job[4:]
         job_2 = ''
         attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
         a = float(attack) * 1.10
         b = float(attack) * 0.95
         if str(job) == 'w':
@@ -364,8 +357,6 @@ async def on_message(message):
         tokkou = msg_job[4:]
         job_3 = ''
         attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
         if str(job) == 'r':
             job_3 = 'ロウニン'
         elif str(job) == 'd':
@@ -399,8 +390,6 @@ async def on_message(message):
         tokkou = msg_job[4:]
         job_4 = ''
         attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
         if str(job) == 'h':
             job_4 = 'ハグレモノ'
         elif str(job) == 'r':
@@ -435,11 +424,11 @@ async def on_message(message):
         embed.add_field(name='ヘルプ', value='.help', inline=False)
         embed.add_field(name='ダメージ計算', value='.dmg [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
         embed.add_field(name='職業込みでのダメージ計算', value='.job(1~3) [職業] [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
-        embed.add_field(name='職業[.job1]について', value='ソルジャー:s, アーチャー:a, マジシャン:m', inline=True)
-        embed.add_field(name='職業[.job2]について', value='ウォーリア:w, ボウマン:b, メイジ:m', inline=True)
+        embed.add_field(name='職業[.job1]について', value='ソルジャー:s, アーチャー:a, マジシャン:m', inline=False)
+        embed.add_field(name='職業[.job2]について', value='ウォーリア:w, ボウマン:b, メイジ:m', inline=False)
         embed.add_field(name='職業[.job3]について', value='ロウニン:r, ドラゴンキラー:d, プリースト:p, スカーミッシャー:s', inline=False)
         embed.add_field(
-            name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=True)
+            name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=False)
         await message.channel.send(embed=embed)
 
 client.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
