@@ -229,7 +229,6 @@ async def calc(message, dmg, os, tokkou):
     elif 1 <= len(tokkou) <= 5:
         tokkou_list = list(set(tokkou))
         tokkou_add = 1.0
-        print(len(tokkou))
 
         if len(tokkou) != len(tokkou_list):
             print("$")
@@ -258,7 +257,6 @@ async def calc(message, dmg, os, tokkou):
                 tokkou_add *= 1.55
                 #####
             alldmg = dmg * os_power * tokkou_add
-            print(alldmg)
             return alldmg
     else:
         await message.channel.send(f"{message.author.mention}, 間違っています。")
@@ -284,8 +282,7 @@ async def on_message(message):
         os = int(msg[2])
         tokkou = msg[3:]
         attack = await calc(message, dmg, os, tokkou)
-        aa = type(attack)
-        await message.channel.send(f"{attack} \n{aa} \nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
+        await message.channel.send(f"{attack} \nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
 
 
 # ソルジャー・アーサー・マジシャン
@@ -297,8 +294,6 @@ async def on_message(message):
         tokkou = msg_job[4:]
         job_1 = ''
         attack =await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
         a = float(attack) * 1.05
         b = float(attack) * 0.98
         if str(job) == 's':
