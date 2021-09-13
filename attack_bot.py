@@ -285,7 +285,7 @@ async def on_message(message):
         tokkou = msg[3:]
         attack = await calc(message, dmg, os, tokkou)
         aa = type(attack)
-        await message.channel.send(f"{attack}, {aa}")
+        await message.channel.send(f"{attack}")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
         await message.channel.send(f"__**攻撃力：{attack:.3f}**__")
@@ -310,6 +310,7 @@ async def on_message(message):
             job_1 = 'アーチャー'
         elif str(job) == 'm':
             job_1 = 'マジシャン'
+        await message.channel.send(f"{attack}")
         await message.channel.send(f"職業：{job_1}")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
@@ -341,6 +342,7 @@ async def on_message(message):
             job_2 = 'ボウマン'
         elif str(job) == 'm':
             job_2 = 'メイジ'
+        await message.channel.send(f"{attack}")
         await message.channel.send(f"職業：{job_2}")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
@@ -372,6 +374,7 @@ async def on_message(message):
             job_3 = 'プリースト'
         elif str(job) == 's':
             job_3 = 'スカーミッシャー'
+        await message.channel.send(f"{attack}")
         await message.channel.send(f"職業：{job_3}")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
@@ -408,6 +411,7 @@ async def on_message(message):
             job_4 == 'アーサー'
         elif str(job) == 'se':
             job_4 == 'シーカー'
+        await message.channel.send(f"{attack}")
         await message.channel.send(f"職業：{job_4}")
         await message.channel.send(f"OS={os}")
         await message.channel.send(f"特攻：{tokkou}")
