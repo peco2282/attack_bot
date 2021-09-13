@@ -427,7 +427,4 @@ async def on_message(message):
             name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=True)
         await message.channel.send(embed=embed)
     
-    if message.content.startswith(".test"):
-
-
 client.run('ODg2NDg2MjA3Mzk0MDk5MjIw.YT2SnQ.ao_vV9w4xIDOdtk8k1_-c_cXobs')
