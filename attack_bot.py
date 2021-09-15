@@ -222,27 +222,25 @@ async def calc(message, dmg, os, tokkou):
 
         # 特攻
     if len(tokkou) == 0:
-        print("0")
         dmg_all = dmg * os_power
         return dmg_all
         
     elif 1 <= len(tokkou) <= 5:
         tokkou_list = list(set(tokkou))
         tokkou_add = 1.0
-        print(len(tokkou))
 
         if len(tokkou) != len(tokkou_list):
             print("$")
             await message.channel.send(f"{message.author.mention}, 重複しています。")
 
-        elif ((str("4_5") or str('4.5')) in tokkou) and (str("5") in tokkou):
-            await message.channel.send("4_5と5は同時に装着できません")
+        elif ((str("4_5") in tokkou) and (str("5") in tokkou)):
+            await message.channel.send(f"{message.author.mention}, 4_5と5は同時に装着できません")
         
-        elif ((str('4_5') or str('4.5')) in tokkou) and ((str('LEG') or str('leg')) in tokkou):
-            await message.channel.send("4_5とLEGEND石は同時に装着できません")
+        elif ((str('4_5') in tokkou) and (str('leg') in tokkou)):
+            await message.channel.send(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
         
-        elif ((str('leg') or str('LEG')) in tokkou) and (str('5') in tokkou):
-            await message.channel.send("5とLEGEND石は同時に装着できません")
+        elif ((str('leg') in tokkou) and (str('5') in tokkou)):
+            await message.channel.send(f"{message.author.mention}, 5とLEGEND石は同時に装着できません")
 
         else:
             if str('1') in tokkou:
@@ -294,8 +292,7 @@ async def on_message(message):
         os = int(msg[2])
         tokkou = msg[3:]
         attack = await calc(message, dmg, os, tokkou)
-        aa = type(attack)
-        await message.channel.send(f"{attack} \n{aa} \nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
+        await message.channel.send(f"素火力：{dmg}\nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
 
 
 # ソルジャー・アーサー・マジシャン
@@ -432,6 +429,7 @@ async def on_message(message):
         cas_stones = cas[3:]
         ct_perk = 1
         cas_stone = 1
+        
         if 1 == ct_p:
             ct_perk = 0.95
         
@@ -461,27 +459,33 @@ async def on_message(message):
         
         elif 10 == ct_p:
             ct_perk = 0.50
+        
+        if 1 <= len(cas_stones) <= 5:
 
-        if str('1') in cas_stones:
-            cas_stone *= 0.95
+            if len(cas_stones) != len(list(set(cas_stones))):
+                print("$")
+                await message.channel.send(f"{message.author.mention}, 重複しています。")
+
+            if str('1') in cas_stones:
+                cas_stone *= 0.95
          
-        if str('2') in cas_stones:
-            cas_stone *= 0.90
+            if str('2') in cas_stones:
+                cas_stone *= 0.90
         
-        if str('3') in cas_stones:
-            cas_stone *= 0.84
+            if str('3') in cas_stones:
+                cas_stone *= 0.84
         
-        if str('4') in cas_stones:
-            cas_stone *= 0.77
+            if str('4') in cas_stones:
+                cas_stone *= 0.77
         
-        if (str('4_5') or str('4.5')) in cas_stones:
-            cas_stone *= 0.72
+            if (str('4_5') or str('4.5')) in cas_stones:
+                cas_stone *= 0.72
         
-        if str('5') in cas_stones:
-            cas_stone *= 0.60
+            if str('5') in cas_stones:
+                cas_stone *= 0.60
         
         cas_all = float(ct * ct_perk * cas_stone)
-        await message.channel.send(f"CT:{str(ct)}\nCTPerk:{str(ct_perk)}\n魔法石:{str(cas_stones)}\n__**CT:{cas_all}**__")
+        await message.channel.send(f"元のCT：{str(ct)}\nCTPerk：{str(ct_perk)}\n魔法石：{str(cas_stones)}\n__**CT：{cas_all}**__")
 
     
     if message.content.startswith(".help"):
