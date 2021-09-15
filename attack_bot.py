@@ -264,7 +264,7 @@ async def calc(message, dmg, os, tokkou):
             if (str('leg') or str('LEG')) in tokkou:
                 alpha= (dmg * 0.06)
                 print(alpha)
-                tokkou_add *= 1.55 * alpha
+                tokkou_add = 1.55 * alpha
                 print(tokkou_add)
                 
                 #####
