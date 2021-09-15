@@ -229,13 +229,20 @@ async def calc(message, dmg, os, tokkou):
     elif 1 <= len(tokkou) <= 5:
         tokkou_list = list(set(tokkou))
         tokkou_add = 1.0
+        print(len(tokkou))
 
         if len(tokkou) != len(tokkou_list):
             print("$")
             await message.channel.send(f"{message.author.mention}, 重複しています。")
 
-        elif (str("4_5") in tokkou) and (str("5") in tokkou):
+        elif ((str("4_5") or str('4.5')) in tokkou) and (str("5") in tokkou):
             await message.channel.send("4_5と5は同時に装着できません")
+        
+        elif ((str('4_5') or str('4.5')) in tokkou) and ((str('LEG') or str('leg')) in tokkou):
+            await message.channel.send("4_5とLEGEND石は同時に装着できません")
+        
+        elif ((str('leg') or str('LEG')) in tokkou) and (str('5') in tokkou):
+            await message.channel.send("5とLEGEND石は同時に装着できません")
 
         else:
             if str('1') in tokkou:
@@ -250,13 +257,18 @@ async def calc(message, dmg, os, tokkou):
             if str('4') in tokkou:
                 tokkou_add *= 1.35
 
-            if str('4_5') in tokkou:
+            if str('4_5' or '4.5') in tokkou:
                 tokkou_add *= 1.40
             
             if str('5') in tokkou:
                 tokkou_add *= 1.55
+            
+            if (str('leg') or str('LEG')) in tokkou:
+                tokkou_add *= 1.55
+                tokkou_add += (dmg * 0.06)
                 #####
             alldmg = dmg * os_power * tokkou_add
+            print(alldmg)
             return alldmg
     else:
         await message.channel.send(f"{message.author.mention}, 間違っています。")
@@ -282,7 +294,8 @@ async def on_message(message):
         os = int(msg[2])
         tokkou = msg[3:]
         attack = await calc(message, dmg, os, tokkou)
-        await message.channel.send(f"{attack} \nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
+        aa = type(attack)
+        await message.channel.send(f"{attack} \n{aa} \nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
 
 
 # ソルジャー・アーサー・マジシャン
@@ -294,6 +307,8 @@ async def on_message(message):
         tokkou = msg_job[4:]
         job_1 = ''
         attack =await calc(message, dmg, os, tokkou)
+        print(attack)
+        print(type(attack))
         a = float(attack) * 1.05
         b = float(attack) * 0.98
         if str(job) == 's':
@@ -410,16 +425,77 @@ async def on_message(message):
         elif job == str('se'):
             await message.channel.send(f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f}, 弓：+10%: {float(attack * 1.10):.3f}, 魔法：-7%: {float(attack * 0.93):.3f}**__")
 
+    if message.content.startswith(".cas"):
+        cas = message.content.split()
+        ct = int(cas[1])
+        ct_p = int(cas[2])
+        cas_stones = cas[3:]
+        ct_perk = 1
+        cas_stone = 1
+        if 1 == ct_p:
+            ct_perk = 0.95
+        
+        elif 2 == ct_p:
+            ct_perk = 0.90
+        
+        elif 3 == ct_p:
+            ct_perk = 0.85
+        
+        elif 4 == ct_p:
+            ct_perk = 0.80
+        
+        elif 5 == ct_p:
+            ct_perk = 0.75
+        
+        elif 6 == ct_p:
+            ct_perk = 0.70
+        
+        elif 7 == ct_p:
+            ct_perk = 0.65
+        
+        elif 8 == ct_p:
+            ct_perk = 0.60
+        
+        elif 9 == ct_p:
+            ct_perk = 0.55
+        
+        elif 10 == ct_p:
+            ct_perk = 0.50
+
+        if str('1') in cas_stones:
+            cas_stone *= 0.95
+         
+        if str('2') in cas_stones:
+            cas_stone *= 0.90
+        
+        if str('3') in cas_stones:
+            cas_stone *= 0.84
+        
+        if str('4') in cas_stones:
+            cas_stone *= 0.77
+        
+        if (str('4_5') or str('4.5')) in cas_stones:
+            cas_stone *= 0.72
+        
+        if str('5') in cas_stones:
+            cas_stone *= 0.60
+        
+        cas_all = float(ct * ct_perk * cas_stone)
+        await message.channel.send(f"CT:{str(ct)}\nCTPerk:{str(ct_perk)}\n魔法石:{str(cas_stones)}\n__**CT:{cas_all}**__")
+
+    
     if message.content.startswith(".help"):
         embed = discord.Embed(title="コマンド一覧", color=discord.Colour.blue())
         embed.add_field(name='ヘルプ', value='.help', inline=False)
-        embed.add_field(name='ダメージ計算', value='.dmg [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
-        embed.add_field(name='職業込みでのダメージ計算', value='.job(1~3) [職業] [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
-        embed.add_field(name='職業[.job1]について', value='ソルジャー:s, アーチャー:a, マジシャン:m', inline=True)
-        embed.add_field(name='職業[.job2]について', value='ウォーリア:w, ボウマン:b, メイジ:m', inline=True)
+        embed.add_field(name='ダメージ計算', value='.dmg [攻撃力] [OS] [魔法石(1~5, ただし4_5, 5, LEGは重複不可)]', inline=False)
+        embed.add_field(name='職業込みでのダメージ計算', value='.job(1~4) [職業] [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
+        embed.add_field(name='職業[.job1]について', value='ソルジャー:s, アーチャー:a, マジシャン:m', inline=False)
+        embed.add_field(name='職業[.job2]について', value='ウォーリア:w, ボウマン:b, メイジ:m', inline=False)
         embed.add_field(name='職業[.job3]について', value='ロウニン:r, ドラゴンキラー:d, プリースト:p, スカーミッシャー:s', inline=False)
         embed.add_field(
-            name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=True)
+            name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=False)
+        embed.add_field(name='キャスター', value='.cas [CT] [CTPerk] [魔法石(1 ~ 5)]', inline=False)
+
         await message.channel.send(embed=embed)
     
 client.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
