@@ -262,10 +262,11 @@ async def calc(message, dmg, os, tokkou):
                 tokkou_add *= 1.55
             
             if (str('leg') or str('LEG')) in tokkou:
-                tokkou_add *= 1.55
+                alpha= (dmg * 0.06)
+                print(alpha)
+                tokkou_add *= 1.55 * alpha
                 print(tokkou_add)
-                tokkou_add += (dmg * 0.06)
-                print(tokkou_add)
+                
                 #####
             alldmg = dmg * os_power * tokkou_add
             print(alldmg)
