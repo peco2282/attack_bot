@@ -392,7 +392,6 @@ async def on_message(message: discord.Message):
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             # os比較
             xOS = wantdmg / attack
-            await message.channel.send(f"{xOS}倍")
             i = 1
             while xOS >= osdict[i]:
                 i += 1
