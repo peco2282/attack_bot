@@ -381,7 +381,7 @@ async def on_message(message: discord.Message):
             os_power = osdict[os]
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             dmg = wantdmg / attack
-            await message.channel.send(f"OS：{os}の時\n{wantdmg}を出すには最低でも火力が__**{dmg:.3f}**__が必要です。")
+            await message.channel.send(f"OS：{os}の時\n{wantdmg}を出すには最低でも火力が__**{dmg:.3f}**__必要です。")
 
         
         if os == '?': # OS不明
