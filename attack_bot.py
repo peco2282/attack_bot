@@ -1,227 +1,82 @@
+from math import ceil
 import discord
+import asyncio
 
+from discord import message
 client = discord.Client()
 
+osdict = {
+    0:1.09,
+    1:1.18,
+    2:1.27,
+    3:1.36,
+    4:1.45,
+    5:1.54,
+    6:1.63,
+    7:1.72,
+    8:1.81,
+    9:1.90,
+    10:2.02659,
+    11:2.15072,
+    12:2.22172,
+    13:2.26701,
+    14:2.29829,
+    15:2.32114,
+    16:2.33856,
+    17:2.35227,
+    18:2.36334,
+    19:2.37246,
+    20:2.38011,
+    21:2.38611,
+    22:2.39221,
+    23:2.39707,
+    24:2.40135,
+    25:2.40513,
+    26:2.40849,
+    27:2.41151,
+    28:2.41424,
+    29:2.4167,
+    30:2.41895,
+    31:2.421,
+    32:2.42289,
+    33:2.42462,
+    34:2.42623,
+    35:2.42772,
+    36:2.4291,
+    37:2.43039,
+    38:2.43159,
+    39:2.43272,
+    40:2.43377,
+    41:2.443476,
+    42:2.4357,
+    43:2.43658,
+    44:2.43742,
+    45:2.43821,
+    46:2.43895,
+    47:2.43966,
+    48:2.44034,
+    49:2.44098,
+    50:2.44159,
+    51:2.44217,
+    52:2.44273,
+    53:2.44326,
+    54:2.44377,
+    55:2.44426,
+    56:2.44473,
+    57:2.44518,
+    58:2.44561,
+    59:2.44602,
+    60:2.44642
+    }
 
-async def calc(message, dmg, os, tokkou):
-    # OS
-    if os == 0:
-        os_power = 1.0
-    elif 60 >= os >= 1:
-        if 1 <= os <= 9:
-            os_power = 0.09 * os + 1.0
-            await message.channel.send(f"OS増加分：{os_power}倍")
 
-        elif os == 10:
-            os_power = 2.02659
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 11:
-            os_power = 2.15072
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 12:
-            os_power = 2.22172
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 13:
-            os_power = 2.26701
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 14:
-            os_power = 2.29829
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 15:
-            os_power = 2.32114
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 16:
-            os_power = 2.33856
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 17:
-            os_power = 2.35227
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 18:
-            os_power = 2.36334
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 19:
-            os_power = 2.37246
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 20:
-            os_power = 2.38011
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 21:
-            os_power = 2.38611
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 22:
-            os_power = 2.39221
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 23:
-            os_power = 2.39707
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 24:
-            os_power = 2.40135
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 25:
-            os_power = 2.40513
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 26:
-            os_power = 2.40849
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 27:
-            os_power = 2.41151
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 28:
-            os_power = 2.41424
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 29:
-            os_power = 2.4167
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 30:
-            os_power = 2.41895
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 31:
-            os_power = 2.421
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 32:
-            os_power = 2.42289
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 33:
-            os_power = 2.42462
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 34:
-            os_power = 2.42623
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 35:
-            os_power = 2.42772
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 36:
-            os_power = 2.4291
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 37:
-            os_power = 2.43039
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 38:
-            os_power = 2.43159
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 39:
-            os_power = 2.43272
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 40:
-            os_power = 2.43377
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 41:
-            os_power = 2.443476
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 42:
-            os_power = 2.4357
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 43:
-            os_power = 2.43658
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 44:
-            os_power = 2.43742
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 45:
-            os_power = 2.43821
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 46:
-            os_power = 2.43895
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 47:
-            os_power = 2.43966
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 48:
-            os_power = 2.44034
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 49:
-            os_power = 2.44098
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 50:
-            os_power = 2.44159
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 51:
-            os_power = 2.44217
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 52:
-            os_power = 2.44273
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 53:
-            os_power = 2.44326
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 54:
-            os_power = 2.44377
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 55:
-            os_power = 2.44426
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 56:
-            os_power = 2.44473
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 57:
-            os_power = 2.44518
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 58:
-            os_power = 2.44561
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 59:
-            os_power = 2.44602
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
-        elif os == 60:
-            os_power = 2.44642
-            await message.channel.send(f"OS増加分：{os_power}倍")
-
+'''
     else:
         await message.channel.send(f"すみませんまだ作成中です")
         os_power = 1.0
-        await message.channel.send(f"OS増加分：{os_power}倍")
-
-        # 特攻
+        return os_power
+'''
+async def tokkoulist(message, dmg, os_power, tokkou):
     if len(tokkou) == 0:
         dmg_all = dmg * os_power
         return dmg_all
@@ -265,17 +120,32 @@ async def calc(message, dmg, os, tokkou):
 
             if (str('leg') or str('LEG')) in tokkou:
                 alpha = (dmg * 0.06)
-                print(alpha)
                 tokkou_add *= 1.55
-                print(tokkou_add)
 
                 #####
             alldmg = dmg * os_power * tokkou_add + alpha
-            print(alldmg)
             return alldmg
-    else:
-        await message.channel.send(f"{message.author.mention}, 間違っています。")
 
+
+async def thumb(message: discord.Message):
+    channel = message.channel
+    await channel.send('Send me that 👍 reaction, mate')
+
+    def check(reaction, user):
+        return user == message.author and str(reaction.emoji) == '👍'
+
+    try:
+        reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+    except asyncio.TimeoutError:
+        await channel.send('👎')
+    else:
+        await channel.send('👍')
+
+
+
+@client.event
+async def on_message_delete(message):
+    print(message)
 
 @client.event
 async def on_ready():
@@ -284,22 +154,30 @@ async def on_ready():
 
 
 @client.event
-async def on_member_join(member):
+async def on_member_join(member: discord.Member):
     channel = member.guild.system_channel
     await channel.send(f"{member.mention},こんにちは")
     await channel.send(f"分からないことがあれば、`.help` をしてください。")
 
-
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
+    
     if message.content.startswith(".dmg"):
         msg = message.content.split()
         dmg = float(msg[1])
         os = int(msg[2])
         tokkou = msg[3:]
-        attack = await calc(message, dmg, os, tokkou)
-        await message.channel.send(f"素火力：{dmg}\nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
+        os_power = osdict[os]
+        attack = await tokkoulist(message, dmg, os_power, tokkou)
+        async with message.channel.typing():
+            # simulate something heavy
+            await asyncio.sleep(0.5)
+            await message.channel.send(f"素火力：{dmg}\nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
+        
+        
 
+   
+        
 
 # ソルジャー・アーサー・マジシャン
     if message.content.startswith(".job1"):
@@ -309,9 +187,8 @@ async def on_message(message):
         os = int(msg_job[3])
         tokkou = msg_job[4:]
         job_1 = ''
-        attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
+        os_power = osdict[os]
+        attack = await tokkoulist(message, dmg, os_power, tokkou)
         a = float(attack) * 1.05
         b = float(attack) * 0.98
         if str(job) == 's':
@@ -338,9 +215,8 @@ async def on_message(message):
         os = int(msg_job[3])
         tokkou = msg_job[4:]
         job_2 = ''
-        attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
+        os_power = osdict[os]
+        attack = await tokkoulist(message, dmg, os_power, tokkou)
         a = float(attack) * 1.10
         b = float(attack) * 0.95
         if str(job) == 'w':
@@ -367,9 +243,8 @@ async def on_message(message):
         os = int(msg_job[3])
         tokkou = msg_job[4:]
         job_3 = ''
-        attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
+        os_power = osdict[os]
+        attack = await tokkoulist(message, dmg, os_power, tokkou)
         if str(job) == 'r':
             job_3 = 'ロウニン'
         elif str(job) == 'd':
@@ -399,9 +274,8 @@ async def on_message(message):
         os = int(msg_job[3])
         tokkou = msg_job[4:]
         job_4 = ''
-        attack = await calc(message, dmg, os, tokkou)
-        print(attack)
-        print(type(attack))
+        os_power = osdict[os]
+        attack = await tokkoulist(message, dmg, os_power, tokkou)
         if str(job) == 'h':
             job_4 = 'ハグレモノ'
         elif str(job) == 'r':
@@ -428,6 +302,7 @@ async def on_message(message):
         elif job == str('se'):
             await message.channel.send(f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f}, 弓：+10%: {float(attack * 1.10):.3f}, 魔法：-7%: {float(attack * 0.93):.3f}**__")
 
+# キャスター計算
     if message.content.startswith(".cas"):
         cas = message.content.split()
         ct = int(cas[1])
@@ -493,8 +368,44 @@ async def on_message(message):
         cas_all = float(ct * ct_perk * cas_stone)
         await message.channel.send(f"元のCT：{str(ct)}\nCTPerk：{str(ct_perk)}\n魔法石：{str(cas_stones)}\n__**CT：{cas_all}**__")
 
-    if message.content.startswith(".help"):
-        embed = discord.Embed(title="コマンド一覧", color=discord.Colour.blue())
+    if message.content.startswith(".ask"):
+        msg = message.content.split()
+        wantdmg = float(msg[1])
+        dmg = msg[2]
+        os= msg[3]
+        tokkou=msg[4:]
+        
+        if dmg == '?': # Dmg不明
+            dmg = 1.0
+            os = int(os)
+            os_power = osdict[os]
+            attack = await tokkoulist(message, dmg, os_power, tokkou)
+            dmg = wantdmg / attack
+            await message.channel.send(f"OS：{os}の時\n{wantdmg}を出すには最低でも火力が__**{dmg:.3f}**__が必要です。")
+
+        
+        if os == '?': # OS不明
+            dmg = float(msg[2])
+            os_power = 1.0
+            # os_power = await oslist(message, os)
+
+            attack = await tokkoulist(message, dmg, os_power, tokkou)
+            # os比較
+            xOS = wantdmg / attack
+            await message.channel.send(f"{xOS}倍")
+            i = 1
+            while xOS >= osdict[i]:
+                i += 1
+                if i >= len(osdict):
+                    i = None
+                    break
+            if i == None:
+                await message.channel.send(f"OSが61以上必要、又は不可能な値です。")
+            else:
+                await message.channel.send(f"{dmg}で{wantdmg}を出すには\n__**OSは{i}以上**__とってください。")  
+
+    if message.content.startswith(".help1"):
+        embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold())
         embed.add_field(name='ヘルプ', value='.help', inline=False)
         embed.add_field(
             name='ダメージ計算', value='.dmg [攻撃力] [OS] [魔法石(1~5, ただし4_5, 5, LEGは重複不可)]', inline=False)
@@ -508,8 +419,16 @@ async def on_message(message):
             name='職業[.job3]について', value='ロウニン:r, ドラゴンキラー:d, プリースト:p, スカーミッシャー:s', inline=False)
         embed.add_field(
             name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=False)
+        
+
+        await message.channel.send(embed=embed)
+    
+    if message.content.startswith(".help2"):
+        embed = discord.Embed(title="コマンド一覧", color=discord.Colour.lighter_gray())
         embed.add_field(
             name='キャスター', value='.cas [CT] [CTPerk] [魔法石(1 ~ 5)]', inline=False)
+        embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
+        embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
 
         await message.channel.send(embed=embed)
     
