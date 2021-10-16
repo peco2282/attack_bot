@@ -496,66 +496,67 @@ async def on_message(message: discord.Message):
         cas_stones = cas[3:]
         ct_perk = 1
         cas_stone = 1
+        try:
+            if 1 == ct_p:
+                ct_perk = 0.95
 
-        if 1 == ct_p:
-            ct_perk = 0.95
+            elif 2 == ct_p:
+                ct_perk = 0.90
 
-        elif 2 == ct_p:
-            ct_perk = 0.90
+            elif 3 == ct_p:
+                ct_perk = 0.85
 
-        elif 3 == ct_p:
-            ct_perk = 0.85
+            elif 4 == ct_p:
+                ct_perk = 0.80
 
-        elif 4 == ct_p:
-            ct_perk = 0.80
+            elif 5 == ct_p:
+                ct_perk = 0.75
 
-        elif 5 == ct_p:
-            ct_perk = 0.75
+            elif 6 == ct_p:
+                ct_perk = 0.70
 
-        elif 6 == ct_p:
-            ct_perk = 0.70
+            elif 7 == ct_p:
+                ct_perk = 0.65
 
-        elif 7 == ct_p:
-            ct_perk = 0.65
+            elif 8 == ct_p:
+                ct_perk = 0.60
 
-        elif 8 == ct_p:
-            ct_perk = 0.60
+            elif 9 == ct_p:
+                ct_perk = 0.55
 
-        elif 9 == ct_p:
-            ct_perk = 0.55
+            elif 10 == ct_p:
+                ct_perk = 0.50
 
-        elif 10 == ct_p:
-            ct_perk = 0.50
+            if 1 <= len(cas_stones) <= 5:
 
-        if 1 <= len(cas_stones) <= 5:
+                if len(cas_stones) != len(list(set(cas_stones))):
+                    print("$")
+                    await message.channel.send(f"{message.author.mention}, 重複しています。")
 
-            if len(cas_stones) != len(list(set(cas_stones))):
-                print("$")
-                await message.channel.send(f"{message.author.mention}, 重複しています。")
+                if str('1') in cas_stones:
+                    cas_stone *= 0.95
 
-            if str('1') in cas_stones:
-                cas_stone *= 0.95
+                if str('2') in cas_stones:
+                    cas_stone *= 0.90
 
-            if str('2') in cas_stones:
-                cas_stone *= 0.90
+                if str('3') in cas_stones:
+                    cas_stone *= 0.84
 
-            if str('3') in cas_stones:
-                cas_stone *= 0.84
+                if str('4') in cas_stones:
+                    cas_stone *= 0.77
 
-            if str('4') in cas_stones:
-                cas_stone *= 0.77
+                if (str('4_5') or str('4.5')) in cas_stones:
+                    cas_stone *= 0.72
 
-            if (str('4_5') or str('4.5')) in cas_stones:
-                cas_stone *= 0.72
+                if str('5') in cas_stones:
+                    cas_stone *= 0.60
 
-            if str('5') in cas_stones:
-                cas_stone *= 0.60
+            cas_all = float(ct * ct_perk * cas_stone)
+            await message.channel.send(
+                f"元のCT：{str(ct)}\nCTPerk：{str(ct_perk)}\n魔法石：{str(cas_stones)}\n__**CT：{cas_all}**__")
 
-        cas_all = float(ct * ct_perk * cas_stone)
-        await message.channel.send(
-            f"元のCT：{str(ct)}\nCTPerk：{str(ct_perk)}\n魔法石：{str(cas_stones)}\n__**CT：{cas_all}**__")
-
-
+        except:
+            pass
     # Dmg, OS計算
     if message.content.startswith(".ask"):
         msg = message.content.split()
@@ -563,35 +564,37 @@ async def on_message(message: discord.Message):
         dmg = msg[2]
         os = msg[3]
         tokkou = msg[4:]
+        try:
+            if dmg == '?':  # Dmg不明
+                dmg = 1.0
+                os = int(os)
+                os_power = osdict[os]
+                attack = await tokkoulist(message, dmg, os_power, tokkou)
+                dmg = wantdmg / attack
+                await message.channel.send(f"OS：{os}の時\n{wantdmg}を出すには最低でも火力が__**{ceil(dmg)}**__が必要です。")
 
-        if dmg == '?':  # Dmg不明
-            dmg = 1.0
-            os = int(os)
-            os_power = osdict[os]
-            attack = await tokkoulist(message, dmg, os_power, tokkou)
-            dmg = wantdmg / attack
-            await message.channel.send(f"OS：{os}の時\n{wantdmg}を出すには最低でも火力が__**{ceil(dmg)}**__が必要です。")
+            if os == '?':  # OS不明
+                dmg = float(msg[2])
+                os_power = 1.0
+                # os_power = await oslist(message, os)
 
-        if os == '?':  # OS不明
-            dmg = float(msg[2])
-            os_power = 1.0
-            # os_power = await oslist(message, os)
+                attack = await tokkoulist(message, dmg, os_power, tokkou)
+                # os比較
+                xos = wantdmg / attack
+                await message.channel.send(f"{xos}倍")
+                i = 1
+                while xos >= osdict[i]:
+                    i += 1
+                    if i >= len(osdict):
+                        i = 'miss'
+                        break
+                if i == 'miss':
+                    await message.channel.send(f"OSが61以上必要、又は不可能な値です。")
+                else:
+                    await message.channel.send(f"{dmg}で{wantdmg}を出すには\n__**OSは{i}以上**__とってください。")
 
-            attack = await tokkoulist(message, dmg, os_power, tokkou)
-            # os比較
-            xos = wantdmg / attack
-            await message.channel.send(f"{xos}倍")
-            i = 1
-            while xos >= osdict[i]:
-                i += 1
-                if i >= len(osdict):
-                    i = 'miss'
-                    break
-            if i == 'miss':
-                await message.channel.send(f"OSが61以上必要、又は不可能な値です。")
-            else:
-                await message.channel.send(f"{dmg}で{wantdmg}を出すには\n__**OSは{i}以上**__とってください。")
-
+        except:
+            pass
 
     if message.content.startswith('.choice1'):
         msg = message.content.split()
@@ -630,20 +633,22 @@ async def on_message(message: discord.Message):
         dangeon = []
         lvs = []
         list_num = await rand_ints_nodup(len(highlv_dangeondict), 5)
-        for i in highlv_dangeondict:
-            value = str(highlv_dangeondict[i])
-            dangeon.append(i)
-            lvs.append(value)
-        nums = 1
-        embed = discord.Embed(title='ダンジョン選択結果', color=discord.Color.dark_gold(), timestamp=datetime.utcnow())
-        embed.set_author(name=message.author.name)
-        for i in list_num:
-            embed.add_field(name=nums, value=f"lv. **{lvs[i]}**, ダンジョン名 : **{dangeon[i]}**", inline=False)
-            nums += 1
+        try:
+            for i in highlv_dangeondict:
+                value = str(highlv_dangeondict[i])
+                dangeon.append(i)
+                lvs.append(value)
+            nums = 1
+            embed = discord.Embed(title='ダンジョン選択結果', color=discord.Color.dark_gold(), timestamp=datetime.utcnow())
+            embed.set_author(name=message.author.name)
+            for i in list_num:
+                embed.add_field(name=nums, value=f"lv. **{lvs[i]}**, ダンジョン名 : **{dangeon[i]}**", inline=False)
+                nums += 1
 
-        sent_message = await message.reply(embed=embed)
-        await sent_message.add_reaction('🚮')
-
+            sent_message = await message.reply(embed=embed)
+            await sent_message.add_reaction('🚮')
+        except:
+            pass
 
     # help
     if message.content == '.help1':
