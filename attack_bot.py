@@ -611,24 +611,28 @@ async def on_message(message: discord.Message):
                 if low <= value <= high:
                     lists.append(i)
                     lvs.append(value)
-
+            print('?')
+            if lists <= 4:
+                print('!Q')
             list_num = await rand_ints_nodup(len(lists), 5)
             embed = discord.Embed(title='**ダンジョン選択結果**', color=discord.Color.dark_green(), timestamp=datetime.utcnow())
             embed.set_author(name=message.author.name)
             nums = 1
-            try:
+            print(list_num)
+            if len(list_num) >= 5:
                 for i in list_num:
                     embed.add_field(name=nums, value=f'lv. **{lvs[i]}** , ダンジョン名：**{lists[i]}**', inline=False)
                     nums += 1
 
                 sent_message = await message.reply(embed=embed)
+                print('$')
 
                 await sent_message.add_reaction('🚮')
-            except:
+            else:
                 await message.channel.send(f':thinking:')
 
         except:
-            await message.reply(f'`.choice` の後に(最低lv.) (最高lv.) を入れてください。(最低lv < 最高lv)')
+            await message.reply(f'`.choice` の後に(最低lv.) (最高lv.) を入れてください。(最低lv < 最高lv), 又はもう少し範囲を広くしてください。')
 
 
     if message.content.startswith('.choice2'):
@@ -693,6 +697,5 @@ async def on_message(message: discord.Message):
         embed.add_field(name='レベルが特殊なダンジョンの時', value='.choice2', inline=False)
         sent_message = await message.reply(embed=embed)
         await sent_message.add_reaction('🚮')
-
     
 client.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
