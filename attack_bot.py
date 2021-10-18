@@ -254,7 +254,7 @@ async def tokkoulist(message, dmg, os_power, tokkou):
             if str('4') in tokkou:
                 tokkou_add *= 1.35
 
-            if str('4_5' or '4.5') in tokkou:
+            if (str('4_5') in tokkou) or (str('4.5') in tokkou):
                 tokkou_add *= 1.40
 
             if str('5') in tokkou:
