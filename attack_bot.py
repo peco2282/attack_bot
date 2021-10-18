@@ -232,10 +232,10 @@ async def tokkoulist(message, dmg, os_power, tokkou):
             print("$")
             await message.channel.send(f"{message.author.mention}, 重複しています。")
 
-        elif (str("4_5") in tokkou) and (str("5") in tokkou):
+        elif ((str("4_5") in tokkou) and (str("5") in tokkou)) or ((str("4.5") in tokkou) and (str("5") in tokkou)):
             await message.channel.send(f"{message.author.mention}, 4_5と5は同時に装着できません")
 
-        elif (str('4_5') in tokkou) and (str('leg') in tokkou):
+        elif ((str('4_5') in tokkou) and (str('leg') in tokkou)) or ((str('4.5') in tokkou) and (str('leg') in tokkou)):
             await message.channel.send(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
 
         elif (str('leg') in tokkou) and (str('5') in tokkou):
