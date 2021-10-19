@@ -1,8 +1,9 @@
-from math import ceil
+import asyncio
 from datetime import datetime
 import random
+from math import ceil
+
 import discord
-import asyncio
 
 client = discord.Client()
 
@@ -82,6 +83,20 @@ osdict = {
     72: 2.45024,
     73: 2.45049,
     74: 2.45074
+}
+
+castimedict = {
+    0: 1.00,
+    1: 0.95,
+    2: 0.90,
+    3: 0.85,
+    4: 0.80,
+    5: 0.75,
+    6: 0.70,
+    7: 0.65,
+    8: 0.60,
+    9: 0.55,
+    10: 0.50
 }
 
 dangeondict = {
@@ -218,6 +233,7 @@ highlv_dangeondict = {
     'Last Judgement(2鯖)  --(-948,178,865 (入口: 90 181 -458))': 'Insanity'
 }
 
+
 async def tokkoulist(message, dmg, os_power, tokkou):
     if len(tokkou) == 0:
         dmg_all = dmg * os_power
@@ -230,16 +246,16 @@ async def tokkoulist(message, dmg, os_power, tokkou):
 
         if len(tokkou) != len(tokkou_list):
             print("$")
-            await message.channel.send(f"{message.author.mention}, 重複しています。")
+            await message.reply(f"{message.author.mention}, 重複しています。")
 
-        elif ((str("4_5") in tokkou) and (str("5") in tokkou)) or ((str("4.5") in tokkou) and (str("5") in tokkou)):
-            await message.channel.send(f"{message.author.mention}, 4_5と5は同時に装着できません")
+        elif (str("4_5") in tokkou) and (str("5") in tokkou):
+            await message.reply(f"{message.author.mention}, 4_5と5は同時に装着できません")
 
-        elif ((str('4_5') in tokkou) and (str('leg') in tokkou)) or ((str('4.5') in tokkou) and (str('leg') in tokkou)):
-            await message.channel.send(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
+        elif (str('4_5') in tokkou) and (str('leg') in tokkou):
+            await message.reply(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
 
         elif (str('leg') in tokkou) and (str('5') in tokkou):
-            await message.channel.send(f"{message.author.mention}, 5とLEGEND石は同時に装着できません")
+            await message.reply(f"{message.author.mention}, 5とLEGEND石は同時に装着できません")
 
         else:
             if str('1') in tokkou:
@@ -254,7 +270,7 @@ async def tokkoulist(message, dmg, os_power, tokkou):
             if str('4') in tokkou:
                 tokkou_add *= 1.35
 
-            if (str('4_5') in tokkou) or (str('4.5') in tokkou):
+            if str('4_5' or '4.5') in tokkou:
                 tokkou_add *= 1.40
 
             if str('5') in tokkou:
@@ -308,293 +324,280 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 
 
 @client.event
-async def on_member_join(member: discord.Member):
-    channel = member.guild.system_channel
-    await channel.send(f"{member.mention}")
-    await channel.send(f"分からないことがあれば、`.help` をしてください。")
+async def on_reaction_add(reaction, user):
+    print(reaction, user)
 
 
 @client.event
 async def on_message(message: discord.Message):
-    if message.content.startswith(".dmg"):
+    # ダメージ計算
+    if message.content.startswith('.dmg'):
         msg = message.content.split()
+        # ダメージ・OS・魔法石
         dmg = float(msg[1])
         os = int(msg[2])
         tokkou = msg[3:]
 
-        if os >= len(osdict):
-            await message.channel.send(f"OS：{os}は倍率がわかっていません。OS=0として計算します。{len(osdict)}以下にしてください。")
-            os_power = 0
-        else:
-            os_power = osdict[os]
-        attack = await tokkoulist(message, dmg, os_power, tokkou)
-        async with message.channel.typing():
-            # simulate something heavy
-            await asyncio.sleep(0.5)
-            await message.channel.send(f"素火力：{dmg}\nOS={os} \n特攻：{tokkou} \n__**攻撃力：{attack:.3f}**__")
-
-
-    # ソルジャー・アーサー・マジシャン
-    if message.content.startswith(".job1"):
-        msg_job = message.content.split()
-        job = str(msg_job[1])  # 職業
-        dmg = float(msg_job[2])
-        os = int(msg_job[3])
-        tokkou = msg_job[4:]
-        job_1 = ''
-        os_power = osdict[os]
-        attack = await tokkoulist(message, dmg, os_power, tokkou)
-        a = float(attack) * 1.05
-        b = float(attack) * 0.98
-        if str(job) == 's':
-            job_1 = 'ソルジャー'
-        elif str(job) == 'a':
-            job_1 = 'アーチャー'
-        elif str(job) == 'm':
-            job_1 = 'マジシャン'
-        await message.channel.send(f"職業：{job_1}\nOS={os}\n特攻：{tokkou}")
-        if job == str('s'):
-            await message.channel.send(f"__**攻撃力：剣：+5%: {a:.3f}, 弓：-2%: {b:.3f}, 魔法：-2%: {b:.3f}**__")
-
-        elif job == str('a'):
-            await message.channel.send(f"__**攻撃力：剣：-2%: {b:.3f}, 弓：+5%: {a:.3f}, 魔法：-2%: {b:.3f}**__")
-
-        elif job == str('m'):
-            await message.channel.send(f"__**攻撃力：剣：-2%: {b:.3f}, 弓：-2%: {b:.3f}, 魔法：+5%: {a:.3f}**__")
-
-
-    # ウォーリア・ボウマン・メイジ
-    if message.content.startswith(".job2"):
-        msg_job = message.content.split()
-        job = str(msg_job[1])  # 職業
-        dmg = float(msg_job[2])
-        os = int(msg_job[3])
-        tokkou = msg_job[4:]
-        job_2 = ''
-        os_power = osdict[os]
-        attack = await tokkoulist(message, dmg, os_power, tokkou)
-        a = float(attack) * 1.10
-        b = float(attack) * 0.95
-        if str(job) == 'w':
-            job_2 = 'ウォーリア'
-        elif str(job) == 'b':
-            job_2 = 'ボウマン'
-        elif str(job) == 'm':
-            job_2 = 'メイジ'
-        await message.channel.send(f"職業：{job_2}\nOS={os}\n特攻：{tokkou}")
-        if job == str('w'):
-            await message.channel.send(f"__**攻撃力：剣：+10%: {a:.3f}, 弓：-5%: {b:.3f}, 魔法：-5%: {b:.3f}**__")
-
-        elif job == str('b'):
-            await message.channel.send(f"__**攻撃力：剣：-5%: {b:.3f}, 弓：+10%: {a:.3f}, 魔法：-5%: {b:.3f}**__")
-
-        elif job == str('m'):
-            await message.channel.send(f"__**攻撃力：剣：-5%: {b:.3f}, 弓：-5%: {b:.3f}, 魔法：+10%: {a:.3f}**__")
-
-
-    # ロウニン・ドラゴンキラー・プリースト・スカーミッシャー
-    if message.content.startswith(".job3"):
-        msg_job = message.content.split()
-        job = str(msg_job[1])  # 職業
-        dmg = float(msg_job[2])
-        os = int(msg_job[3])
-        tokkou = msg_job[4:]
-        job_3 = ''
-        os_power = osdict[os]
-        attack = await tokkoulist(message, dmg, os_power, tokkou)
-        if str(job) == 'r':
-            job_3 = 'ロウニン'
-        elif str(job) == 'd':
-            job_3 = 'ドラゴンキラー'
-        elif str(job) == 'p':
-            job_3 = 'プリースト'
-        elif str(job) == 's':
-            job_3 = 'スカーミッシャー'
-        await message.channel.send(f"職業：{job_3}\nOS={os}\n特攻：{tokkou}")
-        if job == str('r'):
-            await message.channel.send(
-                f"__**攻撃力：剣：-4%: {float(attack * 0.96):.3f},"
-                f"弓：-4%: {float(attack * 0.96):.3f},"
-                f"魔法：-4%: {float(attack * 0.96):.3f}**__")
-
-        elif job == str('d'):
-            await message.channel.send(
-                f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f}, "
-                f"弓：+5%: {float(attack * 1.05):.3f},"
-                f"魔法：-2%: {float(attack * 0.98):.3f}**__")
-
-        elif job == str('p'):
-            await message.channel.send(
-                f"__**攻撃力：剣：-10%: {float(attack * 0.90):.3f},"
-                f"弓：-10%: {float(attack * 0.90):.3f},"
-                f"魔法：-10%: {float(attack * 0.90):.3f}**__")
-
-        elif job == str('s'):
-            await message.channel.send(
-                f"__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},"
-                f"弓：{float(attack):.3f},"
-                f"魔法：{float(attack):.3f}**__")
-
-
-    # ハグレモノ・ルーンキャスター・スペランカー・アーサー・シーカー
-    if message.content.startswith(".job4"):
-        msg_job = message.content.split()
-        job = str(msg_job[1])  # 職業
-        dmg = float(msg_job[2])
-        os = int(msg_job[3])
-        tokkou = msg_job[4:]
-        job_4 = ''
-        os_power = osdict[os]
-        attack = await tokkoulist(message, dmg, os_power, tokkou)
-        if str(job) == 'h':
-            job_4 = 'ハグレモノ'
-        elif str(job) == 'r':
-            job_4 = 'ルーンキャスター'
-        elif str(job) == 'sp':
-            job_4 = 'スペランカー'
-        elif str(job) == 'a':
-            job_4 = 'アーサー'
-        elif str(job) == 'se':
-            job_4 = 'シーカー'
-        await message.channel.send(f"職業：{job_4}\nOS={os}\n特攻：{tokkou}")
-        if job == str('h'):
-            await message.channel.send(
-                f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
-                f"弓：-7%: {float(attack * 0.93):.3f},"
-                f"魔法：-7%: {float(attack * 0.93):.3f}**__")
-
-        elif job == str('r'):
-            await message.channel.send(
-                f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
-                f"弓：-7%: {float(attack * 0.93):.3f},"
-                f"魔法：+7%: {float(attack * 1.07):.3f}**__")
-
-        elif job == str('sp'):
-            await message.channel.send(
-                f"__**攻撃力：剣：+10%: {float(attack * 1.10):.3f},"
-                f"弓：+10%: {float(attack * 1.10):.3f},"
-                f"魔法：+10%: {float(attack * 1.10):.3f}**__")
-
-        elif job == str('a'):
-            await message.channel.send(
-                f"__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},"
-                f"弓：{float(attack):.3f},"
-                f"魔法：{float(attack):.3f}**__")
-
-        elif job == str('se'):
-            await message.channel.send(
-                f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
-                f"弓：+10%: {float(attack * 1.10):.3f},"
-                f"魔法：-7%: {float(attack * 0.93):.3f}**__")
-
-
-    # キャスター計算
-    if message.content.startswith(".cas"):
-        cas = message.content.split()
-        ct = int(cas[1])
-        ct_p = int(cas[2])
-        cas_stones = cas[3:]
-        ct_perk = 1
-        cas_stone = 1
         try:
-            if 1 == ct_p:
-                ct_perk = 0.95
+            if os > len(osdict):
+                await message.reply(f'OS: {len(osdict)}以上は登録されていません。osを0として計算します')
+                os_power = 1
 
-            elif 2 == ct_p:
-                ct_perk = 0.90
+            else:
+                os_power = osdict[os]
 
-            elif 3 == ct_p:
-                ct_perk = 0.85
+            attack = await tokkoulist(message, dmg, os_power, tokkou)
+            print(os_power, attack, tokkou)
+            sent_message = await message.reply(f"{message.author.mention}\n素火力 : {dmg}\nOS : {os}\n"
+                                                      f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
+            await sent_message.add_reaction('🚮')
 
-            elif 4 == ct_p:
-                ct_perk = 0.80
-
-            elif 5 == ct_p:
-                ct_perk = 0.75
-
-            elif 6 == ct_p:
-                ct_perk = 0.70
-
-            elif 7 == ct_p:
-                ct_perk = 0.65
-
-            elif 8 == ct_p:
-                ct_perk = 0.60
-
-            elif 9 == ct_p:
-                ct_perk = 0.55
-
-            elif 10 == ct_p:
-                ct_perk = 0.50
-
-            if 1 <= len(cas_stones) <= 5:
-
-                if len(cas_stones) != len(list(set(cas_stones))):
-                    print("$")
-                    await message.channel.send(f"{message.author.mention}, 重複しています。")
-
-                if str('1') in cas_stones:
-                    cas_stone *= 0.95
-
-                if str('2') in cas_stones:
-                    cas_stone *= 0.90
-
-                if str('3') in cas_stones:
-                    cas_stone *= 0.84
-
-                if str('4') in cas_stones:
-                    cas_stone *= 0.77
-
-                if (str('4_5') or str('4.5')) in cas_stones:
-                    cas_stone *= 0.72
-
-                if str('5') in cas_stones:
-                    cas_stone *= 0.60
-
-            cas_all = float(ct * ct_perk * cas_stone)
-            await message.channel.send(
-                f"元のCT：{str(ct)}\nCTPerk：{str(ct_perk)}\n魔法石：{str(cas_stones)}\n__**CT：{cas_all}**__")
 
         except:
-            pass
-    # Dmg, OS計算
-    if message.content.startswith(".ask"):
-        msg = message.content.split()
-        wantdmg = float(msg[1])
-        dmg = msg[2]
-        os = msg[3]
-        tokkou = msg[4:]
+            await message.reply(f':thinking: {message.author.mention}\n'
+                                       f'`.dmg [攻撃力] [OS] (魔法石)`の順に入力してください。')
+
+    # 職業
+    if message.content.startswith('.job'):
         try:
-            if dmg == '?':  # Dmg不明
+            msg = message.content.split()
+            dmg = float(msg[1])
+            os = int(msg[2])
+            tokkou = msg[3:]
+            os_power = osdict[os]
+            attack = await tokkoulist(message, dmg, os_power, tokkou)
+            embed_1 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+            embed_1.set_author(name=message.author)
+            embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},'
+                                                  f' 弓：-2%: {float(attack * 0.98):.3f},'
+                                                  f' 魔法：-2%: {float(attack * 0.98):.3f}**__', inline=False)
+
+            embed_1.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f},"
+                                                  f" 弓：+5%: {float(attack * 1.05):.3f},"
+                                                  f" 魔法：-2%: {float(attack * 0.98):.3f}**__", inline=False)
+
+            embed_1.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f},"
+                                                  f" 弓：-2%: {float(attack * 0.98):.3f},"
+                                                  f" 魔法：+5%: {float(attack * 1.05):.3f}**__", inline=False)
+
+            embed_1.set_footer(text='Page 1 of 4')
+
+            embed_2 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+
+            embed_2.set_author(name=message.author)
+
+            embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * 1.10):.3f},"
+                                                  f" 弓：-5%: {float(attack * 0.95):.3f},"
+                                                  f" 魔法：-5%: {float(attack * 0.95):.3f}**__", inline=False)
+
+            embed_2.add_field(name='ボウマン', value=f"__**攻撃力：剣：-5%: {attack * 0.95:.3f},"
+                                                 f" 弓：+10%: {float(attack * 1.10):.3f},"
+                                                 f" 魔法：-5%: {float(attack * 0.95):.3f}**__", inline=False)
+
+            embed_2.add_field(name='メイジ', value=f"__**攻撃力：剣：-5%: {float(attack * 0.95):.3f},"
+                                                f" 弓：+10%: {float(attack * 0.95):.3f},"
+                                                f" 魔法：-5%: {float(attack * 1.10):.3f}**__", inline=False)
+
+            embed_2.set_footer(text='Page 2 of 4')
+
+            embed_3 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+
+            embed_3.set_author(name=message.author)
+
+            embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * 0.96):.3f},"
+                                                 f" 弓：-4%: {float(attack * 0.96):.3f},"
+                                                 f" 魔法：-4%: {float(attack * 0.96):.3f}**__", inline=False)
+
+            embed_3.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f}, "
+                                                    f" 弓：+5%: {float(attack * 1.05):.3f},"
+                                                    f" 魔法：-2%: {float(attack * 0.98):.3f}**__", inline=False)
+
+            embed_3.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack * 0.90):.3f},"
+                                                  f" 弓：-10%: {float(attack * 0.90):.3f},"
+                                                  f" 魔法：-10%: {float(attack * 0.90):.3f}**__", inline=False)
+
+            embed_3.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},"
+                                                     f" 弓：{float(attack):.3f},"
+                                                     f" 魔法：{float(attack):.3f}**__", inline=False)
+
+            embed_3.set_footer(text='Page 3 of 4')
+
+            embed_4 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+
+            embed_4.set_author(name=message.author)
+
+            embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
+                                                  f" 弓：-7%: {float(attack * 0.93):.3f},"
+                                                  f" 魔法：-7%: {float(attack * 0.93):.3f}**__", inline=False)
+
+            embed_4.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
+                                                     f" 弓：-7%: {float(attack * 0.93):.3f},"
+                                                     f" 魔法：+7%: {float(attack * 1.07):.3f}**__", inline=False)
+
+            embed_4.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack * 1.10):.3f},"
+                                                   f"  弓：+10%: {float(attack * 1.10):.3f},"
+                                                   f" 魔法：+10%: {float(attack * 1.10):.3f}**__", inline=False)
+
+            embed_4.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},"
+                                                 f" 弓：{float(attack):.3f},"
+                                                 f" 魔法：{float(attack):.3f}**__", inline=False)
+
+            embed_4.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
+                                                 f" 弓：+10%: {float(attack * 1.10):.3f},"
+                                                 f" 魔法：-7%: {float(attack * 0.93):.3f}**__", inline=False)
+
+            embed_4.set_footer(text='Page 4 of 4')
+
+            sent_message = await message.reply(embed=embed_1)
+            '''
+            emoji_selector = u'\U0000fe0f\U000020e3'
+            emoji_1 = u'\N{DIGIT ONE}' + emoji_selector
+            emoji_2 = u'\N{DIGIT TWO}' + emoji_selector  # 2⃣
+            emoji_3 = u'\N{DIGIT THREE}' + emoji_selector  # 3⃣
+            emoji_4 = u'\N{DIGIT FOUR}' + emoji_selector
+            await sent_message.add_reaction(emoji_1)
+            await sent_message.add_reaction(emoji_2)
+            await sent_message.add_reaction(emoji_3)
+            await sent_message.add_reaction(emoji_4)
+            '''
+            print(message.author, client.user)
+            emoji_list = ['⏪', '⏩']
+            page = 0
+            embed_list = [embed_1, embed_2, embed_3, embed_4]
+
+            for add_emoji in emoji_list:
+                await sent_message.add_reaction(add_emoji)
+
+            # リアクションチェック用の関数
+            def check(reaction, user):
+                # botを呼び出した本人からのリアクションのみ受け付ける
+                # reaction.message == msg を入れないと複数出したときに全て連動して動いてしまう
+                return user == message.author and reaction.message == sent_message and str(reaction.emoji) in emoji_list
+
+            while True:
+                try:
+                    # リアクションが付けられるまで待機
+                    reaction, user = await client.wait_for('reaction_add', timeout=15.0, check=check)
+                except asyncio.TimeoutError:
+                    # 一定時間経ったら消す
+                    for remove_emoji in emoji_list:
+                        await sent_message.remove_reaction(emoji=remove_emoji, member=client.user)
+
+                    break
+
+                else:
+                    # 付けられたリアクションに対応した処理を行う
+                    if str(reaction.emoji) == (emoji_list[0]):
+                        # ページ戻し
+                        # ページ数の更新(0~最大ページ数-1の範囲に収める)
+                        page = (page - 1) % len(embed_list)
+
+                    if str(reaction.emoji) == (emoji_list[1]):
+                        # ページ送り
+                        # ページ数の更新(0~最大ページ数-1の範囲に収める)
+                        page = (page + 1) % len(embed_list)
+
+                    print(page)
+                    await sent_message.edit(embed=embed_list[page])
+
+                    # リアクションをもう一度押せるように消しておく
+                    await sent_message.remove_reaction(reaction.emoji, message.author)
+
+
+
+
+        except:
+            await message.reply(f':thinking: {message.author.mention}\n'
+                                       f'`.job [攻撃力] [OS] (魔法石)`の順に入力してください。')
+
+    if message.content.startswith('.cas'):
+        msg = message.content.split()
+        xct = 1.0
+        try:
+            cas_time = float(msg[1])
+            cas_perk = int(msg[2])
+            cas_stone_1 = str(msg[3:])
+            cas_stone_2 = list(set(cas_stone_1))
+
+            ct_perk = castimedict[cas_perk]
+
+            if (len(cas_stone_1) != len(cas_stone_2)) or (len(cas_stone_2) > 5):
+                await message.reply(f':thinking: {message.author.mention}, キャスター石が重複しています。')
+
+            elif ('4_5' in cas_stone_2) and ('4.5' in cas_stone_2):
+                await message.reply(f":thinking: {message.author.mention}, 魔法石`4_5 と 4.5` は同じです。")
+
+            elif '1' in cas_stone_2:
+                xct *= 0.95
+
+            elif '2' in cas_stone_2:
+                xct *= 0.90
+
+            elif '3' in cas_stone_2:
+                xct *= 0.84
+
+            elif '4' in cas_stone_2:
+                xct *= 0.77
+
+            elif ('4_5' in cas_stone_2) or ('4.5' in cas_stone_2):
+                xct *= 0.72
+
+            elif '5' in cas_stone_2:
+                xct *= 0.60
+
+            ct = cas_time * ct_perk * xct
+            await message.reply(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
+                                       f'魔法石 : {cas_stone_2}\n__**最終的なCT : {ct}**__')
+
+        except:
+            await message.reply(f':thinking: {message.author.mention}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
+
+
+    if message.content.startswith('.ask'):
+        msg = message.content.split()
+        try:
+            want_dmg = float(msg[1])
+            now_dmg = msg[2]
+            str_os = msg[3]
+            tokkou = msg[4:]
+
+            if now_dmg == '?':
                 dmg = 1.0
-                os = int(os)
+                os = int(str_os)
                 os_power = osdict[os]
                 attack = await tokkoulist(message, dmg, os_power, tokkou)
-                dmg = wantdmg / attack
-                await message.channel.send(f"OS：{os}の時\n{wantdmg}を出すには最低でも火力が__**{ceil(dmg)}**__が必要です。")
+                ans_dmg = want_dmg / attack
+                await message.reply(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ceil(ans_dmg)}**__が必要です。")
 
-            if os == '?':  # OS不明
+            if str_os == '?':
                 dmg = float(msg[2])
                 os_power = 1.0
-                # os_power = await oslist(message, os)
-
                 attack = await tokkoulist(message, dmg, os_power, tokkou)
-                # os比較
-                xos = wantdmg / attack
-                await message.channel.send(f"{xos}倍")
-                i = 1
+                xos = want_dmg / attack
+
+                i = 0
+
                 while xos >= osdict[i]:
-                    i += 1
-                    if i >= len(osdict):
+                    if i > len(osdict):
                         i = 'miss'
                         break
+                    i += 1
+
                 if i == 'miss':
-                    await message.channel.send(f"OSが61以上必要、又は不可能な値です。")
+                    await message.reply(f"OSが{len(osdict)}以上必要、又は不可能な値です。")
+
                 else:
-                    await message.channel.send(f"{dmg}で{wantdmg}を出すには\n__**OSは{i}以上**__とってください。")
+                    await message.reply(f"{dmg}で{want_dmg}を出すには\n__**OSは{i}以上**__とってください。")
 
         except:
-            pass
+            await message.reply(f":thinking: {message.author.mention}, `.ask [欲しい火力] [今の素ダメ] '?' [魔法石]`\n"
+                                       f"又は　`.ask [欲しい火力] '?' [今のOS] [魔法石]`\n"
+                                       f"と入力してください。")
+
 
     if message.content.startswith('.choice1'):
         msg = message.content.split()
@@ -612,7 +615,7 @@ async def on_message(message: discord.Message):
                     lists.append(i)
                     lvs.append(value)
             print('?')
-            if lists <= 4:
+            if len(lists) <= 4:
                 print('!Q')
             list_num = await rand_ints_nodup(len(lists), 5)
             embed = discord.Embed(title='**ダンジョン選択結果**', color=discord.Color.dark_green(), timestamp=datetime.utcnow())
@@ -628,6 +631,13 @@ async def on_message(message: discord.Message):
                 print('$')
 
                 await sent_message.add_reaction('🚮')
+
+            elif 5 > len(list_num) >= 1:
+                pass
+
+            elif len(list_num) == 0:
+                await message.channel.send(f"存在しません。")
+
             else:
                 await message.channel.send(f':thinking:')
 
@@ -655,46 +665,19 @@ async def on_message(message: discord.Message):
             await sent_message.add_reaction('🚮')
         except:
             pass
-
-    # help
-    if message.content == '.help1':
+    if message.content.startswith('.help'):
         embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=datetime.utcnow())
         embed.set_author(name=message.author.name)
         embed.add_field(name='ヘルプ', value='.help', inline=False)
         embed.add_field(
             name='ダメージ計算', value='.dmg [攻撃力] [OS] [魔法石(1~5, ただし4_5, 5, LEGは重複不可)]', inline=False)
         embed.add_field(
-            name='職業込みでのダメージ計算', value='.job(1~4) [職業] [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
-        embed.add_field(name='職業[.job1]について',
-                        value='ソルジャー:s, アーチャー:a, マジシャン:m', inline=False)
-        embed.add_field(name='職業[.job2]について',
-                        value='ウォーリア:w, ボウマン:b, メイジ:m', inline=False)
-        embed.add_field(
-            name='職業[.job3]について', value='ロウニン:r, ドラゴンキラー:d, プリースト:p, スカーミッシャー:s', inline=False)
-        embed.add_field(
-            name='職業[.job4]について', value='ハグレモノ:h, ルーンキャスター:r, スペランカー:sp, アーサー:a, シーカー:se', inline=False)
-
-        sent_message = await message.reply(embed=embed)
-        await sent_message.add_reaction('🚮')
-
-
-    if message.content == '.help2':
-        embed = discord.Embed(title="コマンド一覧", color=discord.Colour.lighter_gray(), timestamp=datetime.utcnow())
-        embed.set_author(name=message.author.name)
+            name='職業込みでのダメージ計算', value='.job [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
         embed.add_field(
             name='キャスター', value='.cas [CT] [CTPerk] [魔法石(1 ~ 5)]', inline=False)
         embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
         embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
 
-        sent_message = await message.reply(embed=embed)
-        await sent_message.add_reaction('🚮')
-
-
-    if message.content == '.help3':
-        embed = discord.Embed(title='', color=discord.Color.dark_green(), timestamp=datetime.utcnow())
-        embed.set_author(name=message.author.name)
-        embed.add_field(name='レベルが数値であるダンジョンの時', value='.choice1 [最低lv] [最高lv]', inline=False)
-        embed.add_field(name='レベルが特殊なダンジョンの時', value='.choice2', inline=False)
         sent_message = await message.reply(embed=embed)
         await sent_message.add_reaction('🚮')
     
