@@ -298,11 +298,12 @@ class HugaButton(discord.ui.Button):
         await interaction.response.send_message(f'{interaction.user.display_name}は{self.label}を押しました')
 
 '''
+'''
 @client.event
 async def makeButton(ctx: commands.context, *args):
     await ctx.send('Press!', view=HogeButton(args))
 
-
+'''
 async def tokkoulist(message, dmg, os_power, tokkou):
     if len(tokkou) == 0:
         dmg_all = dmg * os_power
