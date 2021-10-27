@@ -281,7 +281,7 @@ Angel_auf_Erden エイドリアン城
 炎帝 ~バジリスクの炎息~	スペシャル
 
 '''
-
+'''
 
 class HogeButton(discord.ui.View):
     def __init__(self, args):
@@ -297,7 +297,7 @@ class HugaButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message(f'{interaction.user.display_name}は{self.label}を押しました')
 
-
+'''
 @client.event
 async def makeButton(ctx: commands.context, *args):
     await ctx.send('Press!', view=HogeButton(args))
