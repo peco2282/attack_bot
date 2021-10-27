@@ -1,9 +1,9 @@
 import asyncio
-from datetime import datetime
 import random
+from datetime import datetime
 from math import ceil
-
 import discord
+from discord.ext import commands
 
 client = discord.Client()
 
@@ -233,6 +233,75 @@ highlv_dangeondict = {
     'Last Judgement(2鯖)  --(-948,178,865 (入口: 90 181 -458))': 'Insanity'
 }
 
+'''
+ルーンオブアルカディア Lux et Tenebrae ,~Rune of Arcadia~ 追憶と創成の間 :
+
+メテオストライク	スペシャル
+マジックボール	ノーマル
+ライトニングボルト	ノーマル
+ファイヤ・ボルケーノ	ノーマル (ルーンキャスター)
+
+
+氷龍の聖弓 IceCave
+
+フロストアロー	スペシャル
+アイスショット	ノーマル
+
+
+浮世の冥剣 Loftgain ・ 死神の弓 Votive
+
+バーサーク	スペシャル
+狂気	ノーマル
+レイジ	ノーマル
+
+
+Dorachenbogen・HässlichesBogen ドラゴンの谷 
+
+-黒竜- ヘイロン -滅-	スペシャル
+
+
+Satans Bote (ストーリー報酬) エイドリアン城
+
+血の斬撃	スペシャル
+
+
+Angel_auf_Erden エイドリアン城 
+
+ショックストーン	スペシャル
+トゥルーロック	ノーマル
+
+
+九例の弓 Clay Dungeon
+
+遠距離スナイプ	スペシャル
+
+
+×Heartsbane× ムスペルへイム(バジリスク溶岩洞窟)
+
+炎帝 ~バジリスクの炎息~	スペシャル
+
+'''
+
+
+class HogeButton(discord.ui.View):
+    def __init__(self, args):
+        super().__init__()
+        for txt in args:
+            self.add_item(HugaButton(txt))
+
+
+class HugaButton(discord.ui.Button):
+    def __init__(self, txt: str):
+        super().__init__(label=txt, style=discord.ButtonStyle.red)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f'{interaction.user.display_name}は{self.label}を押しました')
+
+
+@client.event
+async def makeButton(ctx: commands.context, *args):
+    await ctx.send('Press!', view=HogeButton(args))
+
 
 async def tokkoulist(message, dmg, os_power, tokkou):
     if len(tokkou) == 0:
@@ -240,6 +309,13 @@ async def tokkoulist(message, dmg, os_power, tokkou):
         return dmg_all
 
     elif 1 <= len(tokkou) <= 5:
+        if '4.5' in tokkou:
+            print(tokkou)
+            tokkou.remove('4.5')
+            print(tokkou)
+            tokkou.append('4_5')
+            print(tokkou)
+
         tokkou_list = list(set(tokkou))
         tokkou_add = 1.0
         alpha = 0
@@ -260,25 +336,39 @@ async def tokkoulist(message, dmg, os_power, tokkou):
         else:
             if str('1') in tokkou:
                 tokkou_add *= 1.1
+                tokkou.remove("1")
+                print("1", tokkou_add, tokkou)
 
             if str('2') in tokkou:
                 tokkou_add *= 1.15
+                tokkou.remove("2")
+                print("2", tokkou_add, tokkou)
 
             if str('3') in tokkou:
                 tokkou_add *= 1.23
+                tokkou.remove("3")
+                print("3", tokkou_add, tokkou)
 
             if str('4') in tokkou:
                 tokkou_add *= 1.35
+                tokkou.remove('4')
+                print("4", tokkou_add, tokkou)
 
-            if str('4_5' or '4.5') in tokkou:
+            if str('4_5') in tokkou:
                 tokkou_add *= 1.40
+                tokkou.remove("4_5")
+                print("4_5", tokkou_add, tokkou)
 
             if str('5') in tokkou:
                 tokkou_add *= 1.55
+                tokkou.remove("5")
+                print("5", tokkou_add, tokkou)
 
-            if (str('leg') or str('LEG')) in tokkou:
+            if str('leg') in tokkou:
                 alpha = (dmg * 0.06)
                 tokkou_add *= 1.55
+                tokkou.remove("leg")
+                print("leg", tokkou_add, tokkou)
 
                 #####
             alldmg = dmg * os_power * tokkou_add + alpha
@@ -307,6 +397,10 @@ async def on_message_delete(message):
 async def on_ready():
     print(f'Logged in as: {client.user.name}')
     print(f'With ID: {client.user.id}')
+    channelid = 886185192530780160
+    for channel in client.get_all_channels():
+        if channel.id == channelid:
+            await channel.send("On Ready")
 
 
 @client.event
@@ -324,13 +418,12 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 
 
 @client.event
-async def on_reaction_add(reaction, user):
+async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
     print(reaction, user)
 
 
 @client.event
 async def on_message(message: discord.Message):
-    # ダメージ計算
     if message.content.startswith('.dmg'):
         msg = message.content.split()
         # ダメージ・OS・魔法石
@@ -349,18 +442,21 @@ async def on_message(message: discord.Message):
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             print(os_power, attack, tokkou)
             sent_message = await message.reply(f"{message.author.mention}\n素火力 : {dmg}\nOS : {os}\n"
-                                                      f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
+                                               f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
+            sent_message.is_system()
             await sent_message.add_reaction('🚮')
 
 
         except:
+            print(tokkou)
             await message.reply(f':thinking: {message.author.mention}\n'
-                                       f'`.dmg [攻撃力] [OS] (魔法石)`の順に入力してください。')
+                                f'`.dmg [攻撃力] [OS] (魔法石)`の順に入力してください。')
 
     # 職業
     if message.content.startswith('.job'):
         try:
             msg = message.content.split()
+
             dmg = float(msg[1])
             os = int(msg[2])
             tokkou = msg[3:]
@@ -368,58 +464,58 @@ async def on_message(message: discord.Message):
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             embed_1 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
-            embed_1.set_author(name=message.author)
-            embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},'
-                                                  f' 弓：-2%: {float(attack * 0.98):.3f},'
+            embed_1.set_author(name=f"By {message.author}")
+            embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},'
+                                                  f' 弓：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},'
                                                   f' 魔法：-2%: {float(attack * 0.98):.3f}**__', inline=False)
 
-            embed_1.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f},"
-                                                  f" 弓：+5%: {float(attack * 1.05):.3f},"
-                                                  f" 魔法：-2%: {float(attack * 0.98):.3f}**__", inline=False)
+            embed_1.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},"
+                                                  f" 弓：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
+                                                  f" 魔法：-2%: {float(attack - (dmg * os_power * 0.02)):.3f}**__", inline=False)
 
-            embed_1.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f},"
-                                                  f" 弓：-2%: {float(attack * 0.98):.3f},"
-                                                  f" 魔法：+5%: {float(attack * 1.05):.3f}**__", inline=False)
+            embed_1.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},"
+                                                  f" 弓：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},"
+                                                  f" 魔法：+5%: {float(attack + (dmg * os_power * 0.05)):.3f}**__", inline=False)
 
             embed_1.set_footer(text='Page 1 of 4')
 
             embed_2 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
-            embed_2.set_author(name=message.author)
+            embed_2.set_author(name=f"By {message.author}")
 
-            embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * 1.10):.3f},"
-                                                  f" 弓：-5%: {float(attack * 0.95):.3f},"
-                                                  f" 魔法：-5%: {float(attack * 0.95):.3f}**__", inline=False)
+            embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
+                                                  f" 弓： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
+                                                  f" 魔法： -5%: {float(attack - (dmg * os_power * 0.05)):.3f}**__", inline=False)
 
-            embed_2.add_field(name='ボウマン', value=f"__**攻撃力：剣：-5%: {attack * 0.95:.3f},"
-                                                 f" 弓：+10%: {float(attack * 1.10):.3f},"
-                                                 f" 魔法：-5%: {float(attack * 0.95):.3f}**__", inline=False)
+            embed_2.add_field(name='ボウマン', value=f"__**攻撃力：剣： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
+                                                 f" 弓：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
+                                                 f" 魔法： -5%: {float(attack - (dmg * os_power * 0.05)):.3f}**__", inline=False)
 
-            embed_2.add_field(name='メイジ', value=f"__**攻撃力：剣：-5%: {float(attack * 0.95):.3f},"
-                                                f" 弓：+10%: {float(attack * 0.95):.3f},"
-                                                f" 魔法：-5%: {float(attack * 1.10):.3f}**__", inline=False)
+            embed_2.add_field(name='メイジ', value=f"__**攻撃力：剣： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
+                                                f" 弓： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
+                                                f" 魔法：+10: {float(attack + (dmg * os_power * 0.10)):.3f}**__", inline=False)
 
             embed_2.set_footer(text='Page 2 of 4')
 
             embed_3 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
-            embed_3.set_author(name=message.author)
+            embed_3.set_author(name=f"By {message.author}")
 
-            embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * 0.96):.3f},"
-                                                 f" 弓：-4%: {float(attack * 0.96):.3f},"
-                                                 f" 魔法：-4%: {float(attack * 0.96):.3f}**__", inline=False)
+            embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack - (dmg * os_power * 0.04)):.3f},"
+                                                 f" 弓：-4%: {float(attack - (dmg * os_power * 0.04)):.3f},"
+                                                 f" 魔法：-4%: {float(attack - (dmg * os_power * 0.04)):.3f}**__", inline=False)
 
-            embed_3.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack * 0.98):.3f}, "
-                                                    f" 弓：+5%: {float(attack * 1.05):.3f},"
-                                                    f" 魔法：-2%: {float(attack * 0.98):.3f}**__", inline=False)
+            embed_3.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack - (dmg * os_power * 0.02)):.3f}, "
+                                                    f" 弓：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
+                                                    f" 魔法：-2%: {float(attack - (dmg * os_power * 0.02)):.3f}**__", inline=False)
 
-            embed_3.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack * 0.90):.3f},"
-                                                  f" 弓：-10%: {float(attack * 0.90):.3f},"
-                                                  f" 魔法：-10%: {float(attack * 0.90):.3f}**__", inline=False)
+            embed_3.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack - (dmg * os_power * 0.10)):.3f},"
+                                                  f" 弓：-10%: {float(attack - (dmg * os_power * 0.10)):.3f},"
+                                                  f" 魔法：-10%: {float(attack - (dmg * os_power * 0.10)):.3f}**__", inline=False)
 
-            embed_3.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},"
+            embed_3.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
                                                      f" 弓：{float(attack):.3f},"
                                                      f" 魔法：{float(attack):.3f}**__", inline=False)
 
@@ -428,32 +524,32 @@ async def on_message(message: discord.Message):
             embed_4 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
-            embed_4.set_author(name=message.author)
+            embed_4.set_author(name=f"By {message.author}")
 
-            embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
-                                                  f" 弓：-7%: {float(attack * 0.93):.3f},"
-                                                  f" 魔法：-7%: {float(attack * 0.93):.3f}**__", inline=False)
+            embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
+                                                  f" 弓：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
+                                                  f" 魔法：-7%: {float(attack - (dmg * os_power * 0.07)):.3f}**__", inline=False)
 
-            embed_4.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
-                                                     f" 弓：-7%: {float(attack * 0.93):.3f},"
-                                                     f" 魔法：+7%: {float(attack * 1.07):.3f}**__", inline=False)
+            embed_4.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
+                                                     f" 弓：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
+                                                     f" 魔法：+7%: {float(attack + (dmg * os_power * 0.07)):.3f}**__", inline=False)
 
-            embed_4.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack * 1.10):.3f},"
-                                                   f"  弓：+10%: {float(attack * 1.10):.3f},"
-                                                   f" 魔法：+10%: {float(attack * 1.10):.3f}**__", inline=False)
+            embed_4.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
+                                                   f"  弓：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
+                                                   f" 魔法：+10%: {float(attack + (dmg * os_power * 0.10)):.3f}**__", inline=False)
 
-            embed_4.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack * 1.05):.3f},"
+            embed_4.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
                                                  f" 弓：{float(attack):.3f},"
                                                  f" 魔法：{float(attack):.3f}**__", inline=False)
 
-            embed_4.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack * 0.93):.3f},"
-                                                 f" 弓：+10%: {float(attack * 1.10):.3f},"
-                                                 f" 魔法：-7%: {float(attack * 0.93):.3f}**__", inline=False)
+            embed_4.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
+                                                 f" 弓：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
+                                                 f" 魔法：-7%: {float(attack - (dmg * os_power * 0.07)):.3f}**__", inline=False)
 
             embed_4.set_footer(text='Page 4 of 4')
 
             sent_message = await message.reply(embed=embed_1)
-            '''
+            '''+
             emoji_selector = u'\U0000fe0f\U000020e3'
             emoji_1 = u'\N{DIGIT ONE}' + emoji_selector
             emoji_2 = u'\N{DIGIT TWO}' + emoji_selector  # 2⃣
@@ -481,12 +577,13 @@ async def on_message(message: discord.Message):
             while True:
                 try:
                     # リアクションが付けられるまで待機
-                    reaction, user = await client.wait_for('reaction_add', timeout=15.0, check=check)
+                    reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
+
                 except asyncio.TimeoutError:
                     # 一定時間経ったら消す
-                    for remove_emoji in emoji_list:
-                        await sent_message.remove_reaction(emoji=remove_emoji, member=client.user)
-
+                    # for remove_emoji in emoji_list:
+                    # await sent_message.remove_reaction(emoji=remove_emoji, member=client.user)
+                    await sent_message.clear_reactions()
                     break
 
                 else:
@@ -512,7 +609,7 @@ async def on_message(message: discord.Message):
 
         except:
             await message.reply(f':thinking: {message.author.mention}\n'
-                                       f'`.job [攻撃力] [OS] (魔法石)`の順に入力してください。')
+                                f'`.job [攻撃力] [OS] (魔法石)`の順に入力してください。')
 
     if message.content.startswith('.cas'):
         msg = message.content.split()
@@ -524,6 +621,16 @@ async def on_message(message: discord.Message):
             cas_stone_2 = list(set(cas_stone_1))
 
             ct_perk = castimedict[cas_perk]
+
+            if cas_stone_2 != cas_stone_1:
+                await message.reply(f"{message.author.mention}, 重複しています。")
+
+            if '4.5' in cas_stone_2:
+                print(cas_stone_2)
+                cas_stone_2.remove("4.5")
+                print(cas_stone_2)
+                cas_stone_2.append("4_5")
+                print(cas_stone_2)
 
             if (len(cas_stone_1) != len(cas_stone_2)) or (len(cas_stone_2) > 5):
                 await message.reply(f':thinking: {message.author.mention}, キャスター石が重複しています。')
@@ -543,7 +650,7 @@ async def on_message(message: discord.Message):
             elif '4' in cas_stone_2:
                 xct *= 0.77
 
-            elif ('4_5' in cas_stone_2) or ('4.5' in cas_stone_2):
+            elif '4_5' in cas_stone_2:
                 xct *= 0.72
 
             elif '5' in cas_stone_2:
@@ -551,11 +658,10 @@ async def on_message(message: discord.Message):
 
             ct = cas_time * ct_perk * xct
             await message.reply(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
-                                       f'魔法石 : {cas_stone_2}\n__**最終的なCT : {ct}**__')
+                                f'魔法石 : {cas_stone_2}\n__**最終的なCT : {ct}**__')
 
         except:
             await message.reply(f':thinking: {message.author.mention}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
-
 
     if message.content.startswith('.ask'):
         msg = message.content.split()
@@ -595,9 +701,26 @@ async def on_message(message: discord.Message):
 
         except:
             await message.reply(f":thinking: {message.author.mention}, `.ask [欲しい火力] [今の素ダメ] '?' [魔法石]`\n"
-                                       f"又は　`.ask [欲しい火力] '?' [今のOS] [魔法石]`\n"
-                                       f"と入力してください。")
+                                f"又は　`.ask [欲しい火力] '?' [今のOS] [魔法石]`\n"
+                                f"と入力してください。")
 
+    if message.content.startswith('.skill'):
+        msg = message.content.split()
+        attack = float(msg[1])
+        try:
+            embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"ルーンオブアルカディア (From: Lux et Tenebrae), \n"
+                                                f"~Rune of Arcadia~ (From: 追憶と創成の間)")
+            embed_1.set_author(name=f"By {message.author}")
+            embed_1.add_field(name='',
+                              value=f"メテオストライク (スペシャル)\n"
+                                    f"{attack}")
+            embed_1.add_field(name='', value='', inline=False)
+            embed_1.set_footer(text='Page 1 of 4')
+
+        except:
+            pass
 
     if message.content.startswith('.choice1'):
         msg = message.content.split()
@@ -644,7 +767,6 @@ async def on_message(message: discord.Message):
         except:
             await message.reply(f'`.choice` の後に(最低lv.) (最高lv.) を入れてください。(最低lv < 最高lv), 又はもう少し範囲を広くしてください。')
 
-
     if message.content.startswith('.choice2'):
         dangeon = []
         lvs = []
@@ -680,5 +802,7 @@ async def on_message(message: discord.Message):
 
         sent_message = await message.reply(embed=embed)
         await sent_message.add_reaction('🚮')
+
+
     
 client.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
