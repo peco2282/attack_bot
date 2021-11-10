@@ -2,287 +2,97 @@ import asyncio
 import random
 from datetime import datetime
 from math import ceil
-import discord
-from discord.ext import commands
+import nextcord as discord
+from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
+
+# import discord
+# from discord.ext import commands
+
+# Jobについて変更
 
 client = discord.Client()
-
-osdict = {
-    0: 1.00,
-    1: 1.09,
-    2: 1.18,
-    3: 1.27,
-    4: 1.36,
-    5: 1.45,
-    6: 1.54,
-    7: 1.63,
-    8: 1.72,
-    9: 1.81,
-    10: 2.02659,
-    11: 2.15072,
-    12: 2.22172,
-    13: 2.26701,
-    14: 2.29829,
-    15: 2.32114,
-    16: 2.33856,
-    17: 2.35227,
-    18: 2.36334,
-    19: 2.37246,
-    20: 2.38011,
-    21: 2.38611,
-    22: 2.39221,
-    23: 2.39707,
-    24: 2.40135,
-    25: 2.40513,
-    26: 2.40849,
-    27: 2.41151,
-    28: 2.41424,
-    29: 2.4167,
-    30: 2.41895,
-    31: 2.421,
-    32: 2.42289,
-    33: 2.42462,
-    34: 2.42623,
-    35: 2.42772,
-    36: 2.4291,
-    37: 2.43039,
-    38: 2.43159,
-    39: 2.43272,
-    40: 2.43377,
-    41: 2.443476,
-    42: 2.4357,
-    43: 2.43658,
-    44: 2.43742,
-    45: 2.43821,
-    46: 2.43895,
-    47: 2.43966,
-    48: 2.44034,
-    49: 2.44098,
-    50: 2.44159,
-    51: 2.44217,
-    52: 2.44273,
-    53: 2.44326,
-    54: 2.44377,
-    55: 2.44426,
-    56: 2.44473,
-    57: 2.44518,
-    58: 2.44561,
-    59: 2.44602,
-    60: 2.44642,
-    61: 2.4468,
-    62: 2.44717,
-    63: 2.44753,
-    64: 2.44787,
-    65: 2.4482,
-    66: 2.44852,
-    67: 2.44883,
-    68: 2.44913,
-    69: 2.44942,
-    70: 2.4497,
-    71: 2.44997,
-    72: 2.45024,
-    73: 2.45049,
-    74: 2.45074
-}
-
-castimedict = {
-    0: 1.00,
-    1: 0.95,
-    2: 0.90,
-    3: 0.85,
-    4: 0.80,
-    5: 0.75,
-    6: 0.70,
-    7: 0.65,
-    8: 0.60,
-    9: 0.55,
-    10: 0.50
-}
-
-dangeondict = {
-    '知識の水路  --(-53, 114, 6)': 0,
-    '愛の結晶  --(-3, 106, -9)': 0,
-    'パントリー2  --(69, 112, 17)': 2,
-    'エルドール地下室  --(12, 116, 2)': 2,
-    '精錬所の地下  --(-9, 111, -50)': 2,
-    'Forssa  --(799, 74, -218)': 3,
-    'Forssa迷いの森  --(Forssa内)': 3,
-    'エルドール鉱山  --(118, 112, -27)': 3,
-    'スワロー洞窟  --(-404, 136, 121)': 4,
-    '始まりの遺跡  --(91, 128, 191)': 4,
-    'エルドール牢獄跡  --(-35, 118, -65)': 4,
-    'エルドール洞窟  --(93, 125, 25)': 5,
-    'Lovers2  --(-91, 112, -113)': 5,
-    'グランスメル  --(113, 87, -204)': 5,
-    'Celia\'s Big Tree  --(-514, 79, -181)': 6,
-    'エルドール墓地  --(-98, 140, -6)': 7,
-    'Library  --(Lovers内)': 8,
-    '畑の風車小屋  --(54, 119, 64)': 8,
-    'Ice Age  --(197, 120, -350)': 9,
-    'エルドールの森  --(-10, 122, 47)': 9,
-    'ソラリス大木  --(-300, 163, 82)': 10,
-    'ルーレイ洞窟  --(-698, 79, 204)': 10,
-    'FrederickMount  --(350, 75, -219)': 10,
-    'エルドールのレストラン  --(40, 115, -7)': 10,
-    'エルドール教会の地下  --(-55, 118, -37)': 10,
-    '奈落アスレポルボー  --(トロールガ 内)': 11,
-    'Deep Woods  --(516, 101, 376)': 12,
-    'エルドールの不思議な森  --(57, 118, -122)': 13,
-    'ロンゴノット  --(556, 86, 95)': 14,
-    'マイセン洞窟  --(465, 94, 325)': 15,
-    'シーク  --(-965, 65, -488)': 15,
-    'Remains Corrupt  --(54, 87, -351)': 15,
-    'Water Maze  --(-397, 77, 556)': 15,
-    'ガルダ  --(154, 120, -1055)': 16,
-    'スライム洞窟  --(527, 96, 329)': 18,
-    'Oma海底ダンジョン  --(-1321, 72, 894)': 18,
-    'sorrow tunnel  --(旧エルドール採掘場 内)': 19,
-    'Ali\'s nest  --(210, 111, 431)': 19,
-    '名もなき池  --(-150, 88, -238)': 20,
-    'Flotrave  --(1336, 68, -1092)': 20,
-    'Calanchies  --(-638, 135, -516)': 20,
-    '底深き洞窟  --(276, 78, -962)': 20,
-    'ポッポの森  --(-104, 101, 480)': 20,
-    'マシュー  --(934, 30, -1286)': 21,
-    'Curse mansion  --(-595, 20, -1054)': 22,
-    'アラマンダー  --(-1049, 110, -803)': 23,
-    'Book world  --(-475, 174, -620)': 23,
-    'キャラウェイ  --(-950, 72, -1358)': 24,
-    'Abandoned Waterway  --(-639, 65, -618)': 24,
-    'Icicle Temple  --(1386, 142, -1125)': 25,
-    '神父の地下墓地  --(1364, 84, -448)': 25,
-    '精霊の巣窟  --(255, 98, -161)': 25,
-    'ソドンの滝  --(364, 92, -662)': 27,
-    '図書館の地下  --(Library内)': 28,
-    'コロセウム  --(-1334, 73, -903)': 29,
-    'Qanat  --(-985, 86, -956)': 30,
-    'グリムスヴォトン  --(-1280, 98, -1186)': 30,
-    'コキュートス  --(1522, 76, 197)': 31,
-    'マンティナ洞窟  --(1165, 88, -1222)': 33,
-    '訓練所　第1,2訓練室  --(-1014, 69, 822)': 34,
-    'ジャデュベ廃坑  --(-838, 108, -1250)': 35,
-    'Deja_Boo  --(907, 90, -400)': 36,
-    'カシュガル(Qesqer)  --(-1123, 62, -670)': 37,
-    'パーゴタリー  --(-196, 125, 389)': 38,
-    'FinalFestival  --(-180, 160, -7)': 39,
-    'ホートン鉱山  --(-201, 85, -103)': 40,
-    'カラ・ルーナ  --(-1366, 70, -547)': 40,
-    '深き洞窟  --(-1020, 104, 1225)': 40,
-    '憑依船  --(-1297, 73, 705)': 41,
-    'Unreasonable Gravity Island  --(194, 49, 1176)': 41,
-    'Los cyanyones  --(-879, 71, -1167)': 42,
-    'Red Hell Tree  --(-668, 114, -1128)': 43,
-    'ザルモザラ  --(-1220, 102, -858)': 44,
-    'Collapse Experiment Site  --(1110, 90, -1318)': 45,
-    'タオピピ  --(パルジャ(海底村) 内)': 46,
-    'マナナスラ  --(-1193, 73, -535)': 47,
-    'Amber Break Cave  --(965, 76, 79)': 48,
-    'Trollga  --(61, 66, -512)': 50,
-    'Lavatree  --(-1096, 75, -1112)': 51,
-    'ベルフォート鉱山  --(-1070, 63, 708)': 52,
-    'クリベラ洞窟  --(-345, 92, -363)': 53,
-    'VenLin回廊  --(1360, 114, 722)': 53,
-    '死者の谷  --(-1016, 65, 119)': 54,
-    'monte sub terra(モンテサブテラ)  --(-1380, 72, -745)': 55,
-    'Mycelium cave  --(870, 22, -1283)': 55,
-    'クラバスタ(厄災去りて闇に沈む)  --(1220, 17, -1294)': 55,
-    '碧の洞窟  --(-500, 42, 1284)': 55,
-    '訓練所　第3,4訓練室  --(-1014, 69, 822)': 56,
-    '虚空の地下  --(-902, 69, 1124)': 57,
-    '不完全な拷問所  --(-386, 130, 246)': 58,
-    '芋虫ダンジョン(高難度アスレ)  --(Trollga 内)': 59,
-    'bocyanyu  --(-979, 58, -1158)': 60,
-    'cature  --(550, 105, -1158)': 60,
-    'マリンディ鉱山  --(109, 118, -801)': 60,
-    'Clay Dungeon  --(1189, 88, 410)': 60,
-    'Loftgain  --(-989, 65, -1117)': 64,
-    'Vambrila Castle  --(クラバスタ(厄災去りて闇に沈む) 内)': 65,
-    'Votive  --(ドンケル・エルドール内)': 65,
-    'Barco de la Liebre  --(574, 67, 907)': 66,
-    'エイドリアン城  --(-1102, 70, 340)': 68,
-    '輝煌の残滓(EX)  --(Lux et Tenebrae 内)': 68,
-    '力試し  --(-80, 187, 1221)': 70,
-    '永久に眠る図書館  --(-619, 29, -658)': 75,
-    '厄災降臨  --(クラバスタ(厄災去りて闇に沈む) 内)': 75,
-    '追憶と創成の間  --(Lux et Tenebrae-光- 又は 輝煌の残滓 クリア後 TP)': 80,
-    '海底谷に沈む研究所(2鯖)  --(海底村(マーラン) 内)': 83
-}
-
-highlv_dangeondict = {
-    'Underground  --(260, 155, 1)': 'アスレS',
-    'Qubasar  --(364, 167, -855)': 'BossRush',
-    'カルグラス遺跡  --(nyakonyan\'s secret room1(-1269,79,-927)でNPC(nyakonyan)からクエストを受ける)': 'BossRush',
-    '魔界:ココリ山  --(1406, 104, 700)': 'BossRush+++',
-    'Estrada Of Cave  --(-1023, 71, -107)': 'Elite',
-    'Desert Templum  --(-1197, 121, -1165)': 'Elite',
-    'IceCave  --(1437, 153, -1222)': 'Elite',
-    'Lux et Tenebrae  --(90,88,-567 (入口: 143,170,-486))': 'Elite',
-    'Tower of Judgement  --(-378, 30, 1360)': 'Extream',
-    'ムスペルヘイム(バジリスク溶岩洞窟)': 'Expert',
-    '魔界:封印の洞窟  --(1470, 70, -790)': 'Expert',
-    '魔界:ヘルスラ  --(-906, 78, -704)': 'Expert',
-    'AGNI ruins (高難易度アスレ)  --(-474, 150, -622)': 'Extra',
-    'Vaaasa  --(1424, 133, -1180)': 'Extra',
-    '蒼天に舞う輝煌の創者(1,2鯖)  --(Lux et Tenebrae 最初の部屋)': 'Ulutimate',
-    'ドラゴンの谷  --(-1106, 89, 623)': 'Impossible(2鯖)',
-    '冥界  --(ドンケル・エル・ドール内)': 'Impossible++',
-    'Xen\'s Castle  --(857, 66, -745)': 'XEN',
-    '魔界:ソマの谷  --(972, 75, 214)': 'UNKNOWN',
-    '浮世の砂海(N)(2鯖)  --(-992,46,-1145)': '未知数',
-    '浮世の砂海(T)(2鯖)  --(-992,46,-1145)': '未知数',
-    'Last Judgement(2鯖)  --(-948,178,865 (入口: 90 181 -458))': 'Insanity'
-}
 
 '''
 ルーンオブアルカディア Lux et Tenebrae ,~Rune of Arcadia~ 追憶と創成の間 :
 
-メテオストライク	スペシャル
-マジックボール	ノーマル
-ライトニングボルト	ノーマル
-ファイヤ・ボルケーノ	ノーマル (ルーンキャスター)
+メテオストライク	スペシャル　  x9
+マジックボール	ノーマル    x4
+ライトニングボルト	ノーマル    x3
+ファイヤ・ボルケーノ	ノーマル (ルーンキャスター)    x22
 
 
 氷龍の聖弓 IceCave
 
-フロストアロー	スペシャル
-アイスショット	ノーマル
+フロストアロー	スペシャル    x5
+アイスショット	ノーマル    x1.5
 
 
 浮世の冥剣 Loftgain ・ 死神の弓 Votive
 
-バーサーク	スペシャル
-狂気	ノーマル
-レイジ	ノーマル
+バーサーク	スペシャル    x2.5
+狂気	ノーマル    x1.5
+レイジ	ノーマル    x2
 
 
 Dorachenbogen・HässlichesBogen ドラゴンの谷 
 
--黒竜- ヘイロン -滅-	スペシャル
+-黒竜- ヘイロン -滅-	スペシャル    x8
 
 
 Satans Bote (ストーリー報酬) エイドリアン城
 
-血の斬撃	スペシャル
+血の斬撃	スペシャル    x2.5
 
 
 Angel_auf_Erden エイドリアン城 
 
-ショックストーン	スペシャル
-トゥルーロック	ノーマル
+ショックストーン	スペシャル    x7
+トゥルーロック	ノーマル     x4
+
+
+†Twilight HeavenRay† 輝煌の残滓
+神の鉄槌	スペシャル
+
+光ある場所に	パッシブ
+
 
 
 九例の弓 Clay Dungeon
 
-遠距離スナイプ	スペシャル
+遠距離スナイプ	スペシャル    x6 / スタン時 x13
+ロックオン	ノーマル    x1.5
+
 
 
 ×Heartsbane× ムスペルへイム(バジリスク溶岩洞窟)
 
-炎帝 ~バジリスクの炎息~	スペシャル
+炎帝 ~バジリスクの炎息~	スペシャル    x8
+猛火斬り	ノーマル    x1.2
+'''
 
 '''
+下剋上(Boss:1.2, Mob:0.7)
+
+ボルケ(22)
+
+マジックボール(8倍, 4倍)
+
+ショックストーン(7)
+
+カオブリ(7)
+
+雪柱(4)
+
+オーバーシュート(1.875(スキルあり), 1.25(スキルなし))
+
+覚醒使用時(2)
+
+血の斬撃(2.5)
+
+ヘイロン -滅-(8)
 '''
 
+'''
 class HogeButton(discord.ui.View):
     def __init__(self, args):
         super().__init__()
@@ -297,13 +107,13 @@ class HugaButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message(f'{interaction.user.display_name}は{self.label}を押しました')
 
-'''
-'''
+
 @client.event
 async def makeButton(ctx: commands.context, *args):
     await ctx.send('Press!', view=HogeButton(args))
-
 '''
+
+
 async def tokkoulist(message, dmg, os_power, tokkou):
     if len(tokkou) == 0:
         dmg_all = dmg * os_power
@@ -323,16 +133,16 @@ async def tokkoulist(message, dmg, os_power, tokkou):
 
         if len(tokkou) != len(tokkou_list):
             print("$")
-            await message.reply(f"{message.author.mention}, 重複しています。")
+            await message.channel.send(f"{message.author.mention}, 重複しています。")
 
         elif (str("4_5") in tokkou) and (str("5") in tokkou):
-            await message.reply(f"{message.author.mention}, 4_5と5は同時に装着できません")
+            await message.channel.send(f"{message.author.mention}, 4_5と5は同時に装着できません")
 
         elif (str('4_5') in tokkou) and (str('leg') in tokkou):
-            await message.reply(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
+            await message.channel.send(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
 
         elif (str('leg') in tokkou) and (str('5') in tokkou):
-            await message.reply(f"{message.author.mention}, 5とLEGEND石は同時に装着できません")
+            await message.channel.send(f"{message.author.mention}, 5とLEGEND石は同時に装着できません")
 
         else:
             if str('1') in tokkou:
@@ -386,9 +196,6 @@ async def rand_ints_nodup(a, k):
     return ns
 
 
-print({discord.__version__})
-
-
 @client.event
 async def on_message_delete(message):
     print(message)
@@ -396,12 +203,22 @@ async def on_message_delete(message):
 
 @client.event
 async def on_ready():
-    print(f'Logged in as: {client.user.name}')
-    print(f'With ID: {client.user.id}')
+    print('Logged in as: ' + client.user.name + ', With ID:' + str(client.user.id))
+    print('Ver.:' + discord.__version__)
     channelid = 886185192530780160
+    channelid_2 = 886495611728302091
     for channel in client.get_all_channels():
-        if channel.id == channelid:
+        if (channel.id == channelid) or (channel.id == channelid_2):
             await channel.send("On Ready")
+
+
+@client.event
+async def on_resumed():
+    channelid = 886185192530780160
+    channelid_2 = 886495611728302091
+    for channel in client.get_all_channels():
+        if (channel.id == channelid) or (channel.id == channelid_2):
+            await channel.send("On Resumed")
 
 
 @client.event
@@ -434,7 +251,7 @@ async def on_message(message: discord.Message):
 
         try:
             if os > len(osdict):
-                await message.reply(f'OS: {len(osdict)}以上は登録されていません。osを0として計算します')
+                await message.channel.send(f'OS: {len(osdict)}以上は登録されていません。osを0として計算します')
                 os_power = 1
 
             else:
@@ -442,16 +259,16 @@ async def on_message(message: discord.Message):
 
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             print(os_power, attack, tokkou)
-            sent_message = await message.reply(f"{message.author.mention}\n素火力 : {dmg}\nOS : {os}\n"
-                                               f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
+            sent_message = await message.channel.send(f"{message.author.mention}\n素火力 : {dmg}\nOS : {os}\n"
+                                                      f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
             sent_message.is_system()
             await sent_message.add_reaction('🚮')
 
 
         except:
             print(tokkou)
-            await message.reply(f':thinking: {message.author.mention}\n'
-                                f'`.dmg [攻撃力] [OS] (魔法石)`の順に入力してください。')
+            await message.channel.send(f':thinking: {message.author.mention}\n'
+                                       f'`.dmg [攻撃力] [OS] (魔法石)`の順に入力してください。')
 
     # 職業
     if message.content.startswith('.job'):
@@ -461,22 +278,27 @@ async def on_message(message: discord.Message):
             dmg = float(msg[1])
             os = int(msg[2])
             tokkou = msg[3:]
-            os_power = osdict[os]
+            os_power = 1.0
+            os_raw_power = osdict[os]
             attack = await tokkoulist(message, dmg, os_power, tokkou)
+            print(f'{attack}, {dmg}, {os}, {tokkou}, {os_power}')
             embed_1 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
             embed_1.set_author(name=f"By {message.author}")
-            embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},'
-                                                  f' 弓：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},'
-                                                  f' 魔法：-2%: {float(attack * 0.98):.3f}**__', inline=False)
+            embed_1.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
+            embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},'
+                                                  f' 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},'
+                                                  f' 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__', inline=False)
 
-            embed_1.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},"
-                                                  f" 弓：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
-                                                  f" 魔法：-2%: {float(attack - (dmg * os_power * 0.02)):.3f}**__", inline=False)
+            embed_1.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
+                                                  f" 弓：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
+                                                  f" 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__",
+                              inline=False)
 
-            embed_1.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},"
-                                                  f" 弓：-2%: {float(attack - (dmg * os_power * 0.02)):.3f},"
-                                                  f" 魔法：+5%: {float(attack + (dmg * os_power * 0.05)):.3f}**__", inline=False)
+            embed_1.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
+                                                  f" 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
+                                                  f" 魔法：+5%: {float(attack * (os_raw_power + 0.05)):.3f}**__",
+                              inline=False)
 
             embed_1.set_footer(text='Page 1 of 4')
 
@@ -485,17 +307,20 @@ async def on_message(message: discord.Message):
 
             embed_2.set_author(name=f"By {message.author}")
 
-            embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
-                                                  f" 弓： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
-                                                  f" 魔法： -5%: {float(attack - (dmg * os_power * 0.05)):.3f}**__", inline=False)
+            embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                  f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                  f" 魔法： -5%: {float(attack * (os_raw_power - 0.05)):.3f}**__",
+                              inline=False)
 
-            embed_2.add_field(name='ボウマン', value=f"__**攻撃力：剣： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
-                                                 f" 弓：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
-                                                 f" 魔法： -5%: {float(attack - (dmg * os_power * 0.05)):.3f}**__", inline=False)
+            embed_2.add_field(name='ボウマン', value=f"__**攻撃力：剣： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                 f" 弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                 f" 魔法： -5%: {float(attack * (os_raw_power - 0.05)):.3f}**__",
+                              inline=False)
 
-            embed_2.add_field(name='メイジ', value=f"__**攻撃力：剣： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
-                                                f" 弓： -5%: {float(attack - (dmg * os_power * 0.05)):.3f},"
-                                                f" 魔法：+10: {float(attack + (dmg * os_power * 0.10)):.3f}**__", inline=False)
+            embed_2.add_field(name='メイジ', value=f"__**攻撃力：剣： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                f" 魔法：+10: {float(attack * (os_raw_power + 0.10)):.3f}**__",
+                              inline=False)
 
             embed_2.set_footer(text='Page 2 of 4')
 
@@ -504,19 +329,22 @@ async def on_message(message: discord.Message):
 
             embed_3.set_author(name=f"By {message.author}")
 
-            embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack - (dmg * os_power * 0.04)):.3f},"
-                                                 f" 弓：-4%: {float(attack - (dmg * os_power * 0.04)):.3f},"
-                                                 f" 魔法：-4%: {float(attack - (dmg * os_power * 0.04)):.3f}**__", inline=False)
+            embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
+                                                 f" 弓：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
+                                                 f" 魔法：-4%: {float(attack * (os_raw_power - 0.04)):.3f}**__",
+                              inline=False)
 
-            embed_3.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack - (dmg * os_power * 0.02)):.3f}, "
-                                                    f" 弓：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
-                                                    f" 魔法：-2%: {float(attack - (dmg * os_power * 0.02)):.3f}**__", inline=False)
+            embed_3.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f}, "
+                                                    f" 弓：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
+                                                    f" 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__",
+                              inline=False)
 
-            embed_3.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack - (dmg * os_power * 0.10)):.3f},"
-                                                  f" 弓：-10%: {float(attack - (dmg * os_power * 0.10)):.3f},"
-                                                  f" 魔法：-10%: {float(attack - (dmg * os_power * 0.10)):.3f}**__", inline=False)
+            embed_3.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack * (os_raw_power - 0.10)):.3f},"
+                                                  f" 弓：-10%: {float(attack * (os_raw_power - 0.10)):.3f},"
+                                                  f" 魔法：-10%: {float(attack * (os_raw_power - 0.10)):.3f}**__",
+                              inline=False)
 
-            embed_3.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
+            embed_3.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
                                                      f" 弓：{float(attack):.3f},"
                                                      f" 魔法：{float(attack):.3f}**__", inline=False)
 
@@ -527,29 +355,33 @@ async def on_message(message: discord.Message):
 
             embed_4.set_author(name=f"By {message.author}")
 
-            embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
-                                                  f" 弓：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
-                                                  f" 魔法：-7%: {float(attack - (dmg * os_power * 0.07)):.3f}**__", inline=False)
+            embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                  f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                  f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
+                              inline=False)
 
-            embed_4.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
-                                                     f" 弓：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
-                                                     f" 魔法：+7%: {float(attack + (dmg * os_power * 0.07)):.3f}**__", inline=False)
+            embed_4.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                     f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                     f" 魔法：+7%: {float(attack * (os_raw_power + 0.07)):.3f}**__",
+                              inline=False)
 
-            embed_4.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
-                                                   f"  弓：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
-                                                   f" 魔法：+10%: {float(attack + (dmg * os_power * 0.10)):.3f}**__", inline=False)
+            embed_4.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                   f"  弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                   f" 魔法：+10%: {float(attack * (os_raw_power + 0.10)):.3f}**__",
+                              inline=False)
 
-            embed_4.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack + (dmg * os_power * 0.05)):.3f},"
+            embed_4.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
                                                  f" 弓：{float(attack):.3f},"
                                                  f" 魔法：{float(attack):.3f}**__", inline=False)
 
-            embed_4.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack - (dmg * os_power * 0.07)):.3f},"
-                                                 f" 弓：+10%: {float(attack + (dmg * os_power * 0.10)):.3f},"
-                                                 f" 魔法：-7%: {float(attack - (dmg * os_power * 0.07)):.3f}**__", inline=False)
+            embed_4.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                 f" 弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                 f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
+                              inline=False)
 
             embed_4.set_footer(text='Page 4 of 4')
 
-            sent_message = await message.reply(embed=embed_1)
+            sent_message = await message.channel.send(embed=embed_1)
             '''+
             emoji_selector = u'\U0000fe0f\U000020e3'
             emoji_1 = u'\N{DIGIT ONE}' + emoji_selector
@@ -609,8 +441,8 @@ async def on_message(message: discord.Message):
 
 
         except:
-            await message.reply(f':thinking: {message.author.mention}\n'
-                                f'`.job [攻撃力] [OS] (魔法石)`の順に入力してください。')
+            await message.channel.send(f':thinking: {message.author.mention}\n'
+                                       f'`.job [攻撃力] [OS] (魔法石)`の順に入力してください。')
 
     if message.content.startswith('.cas'):
         msg = message.content.split()
@@ -624,7 +456,7 @@ async def on_message(message: discord.Message):
             ct_perk = castimedict[cas_perk]
 
             if cas_stone_2 != cas_stone_1:
-                await message.reply(f"{message.author.mention}, 重複しています。")
+                await message.channel.send(f"{message.author.mention}, 重複しています。")
 
             if '4.5' in cas_stone_2:
                 print(cas_stone_2)
@@ -634,10 +466,10 @@ async def on_message(message: discord.Message):
                 print(cas_stone_2)
 
             if (len(cas_stone_1) != len(cas_stone_2)) or (len(cas_stone_2) > 5):
-                await message.reply(f':thinking: {message.author.mention}, キャスター石が重複しています。')
+                await message.channel.send(f':thinking: {message.author.mention}, キャスター石が重複しています。')
 
             elif ('4_5' in cas_stone_2) and ('4.5' in cas_stone_2):
-                await message.reply(f":thinking: {message.author.mention}, 魔法石`4_5 と 4.5` は同じです。")
+                await message.channel.send(f":thinking: {message.author.mention}, 魔法石`4_5 と 4.5` は同じです。")
 
             elif '1' in cas_stone_2:
                 xct *= 0.95
@@ -658,11 +490,11 @@ async def on_message(message: discord.Message):
                 xct *= 0.60
 
             ct = cas_time * ct_perk * xct
-            await message.reply(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
-                                f'魔法石 : {cas_stone_2}\n__**最終的なCT : {ct}**__')
+            await message.channel.send(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
+                                       f'魔法石 : {cas_stone_2}\n__**最終的なCT : {ct}**__')
 
         except:
-            await message.reply(f':thinking: {message.author.mention}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
+            await message.channel.send(f':thinking: {message.author.mention}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
 
     if message.content.startswith('.ask'):
         msg = message.content.split()
@@ -678,7 +510,7 @@ async def on_message(message: discord.Message):
                 os_power = osdict[os]
                 attack = await tokkoulist(message, dmg, os_power, tokkou)
                 ans_dmg = want_dmg / attack
-                await message.reply(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ceil(ans_dmg)}**__が必要です。")
+                await message.channel.send(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ceil(ans_dmg)}**__が必要です。")
 
             if str_os == '?':
                 dmg = float(msg[2])
@@ -695,32 +527,91 @@ async def on_message(message: discord.Message):
                     i += 1
 
                 if i == 'miss':
-                    await message.reply(f"OSが{len(osdict)}以上必要、又は不可能な値です。")
+                    await message.channel.send(f"OSが{len(osdict)}以上必要、又は不可能な値です。")
 
                 else:
-                    await message.reply(f"{dmg}で{want_dmg}を出すには\n__**OSは{i}以上**__とってください。")
+                    await message.channel.send(f"{dmg}で{want_dmg}を出すには\n__**OSは{i}以上**__とってください。")
 
         except:
-            await message.reply(f":thinking: {message.author.mention}, `.ask [欲しい火力] [今の素ダメ] '?' [魔法石]`\n"
-                                f"又は　`.ask [欲しい火力] '?' [今のOS] [魔法石]`\n"
-                                f"と入力してください。")
+            await message.channel.send(f":thinking: {message.author.mention}, `.ask [欲しい火力] [今の素ダメ] '?' [魔法石]`\n"
+                                       f"又は　`.ask [欲しい火力] '?' [今のOS] [魔法石]`\n"
+                                       f"と入力してください。")
 
     if message.content.startswith('.skill'):
-        msg = message.content.split()
-        attack = float(msg[1])
+
         try:
+            msg = message.content.split()
+            dmg = float(msg[1])
+            os = int(msg[2])
+            tokkou = msg[3:]
+            os_power = osdict[os]
+            print(os_power)
+            attack = await tokkoulist(message, dmg, os_power, tokkou)
             embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
-                                    description=f"ルーンオブアルカディア (From: Lux et Tenebrae), \n"
-                                                f"~Rune of Arcadia~ (From: 追憶と創成の間)")
-            embed_1.set_author(name=f"By {message.author}")
-            embed_1.add_field(name='',
-                              value=f"メテオストライク (スペシャル)\n"
-                                    f"{attack}")
-            embed_1.add_field(name='', value='', inline=False)
-            embed_1.set_footer(text='Page 1 of 4')
+                                    description=f"**職業：ノービス**")
+
+            embed_1.set_author(name=message.author.name)
+
+            embed_1.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4:.3f}__**, **(詠唱時：__{attack * 8:.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_1.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7:.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+
+            embed_1.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7:.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+
+            embed_1.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5:.3f}__, パッシブあり：__{attack * 12.5 * 1.5:.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5:.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5:.3f}__**', inline=False)
+
+            embed_1.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
+
+            embed_1.add_field(name=f'Dorachenbogen・HässlichesBogen (In ドラゴンの谷)',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
+
+            embed_2 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：ソルジャー**")
+
+            embed_2.set_author(name=message.author.name)
+
+            embed_2.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4:.3f}__**, **(詠唱時：__{attack * 8:.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 :.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_2.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7:.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+
+            embed_2.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7:.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+
+            embed_2.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5:.3f}__, パッシブあり：__{attack * 12.5 * 1.5:.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5:.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5:.3f}__**', inline=False)
+
+            embed_2.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
+
+            embed_2.add_field(name=f'Dorachenbogen・HässlichesBogen (In ドラゴンの谷)',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
+
+            await message.channel.send(embed=embed_1)
+
 
         except:
+            await message.channel.send(f':thinking: {message.author.mention},`.skill [総ダメージ]`')
             pass
 
     if message.content.startswith('.choice1'):
@@ -748,10 +639,10 @@ async def on_message(message: discord.Message):
             print(list_num)
             if len(list_num) >= 5:
                 for i in list_num:
-                    embed.add_field(name=nums, value=f'lv. **{lvs[i]}** , ダンジョン名：**{lists[i]}**', inline=False)
+                    embed.add_field(name=f"{nums}", value=f'lv. **{lvs[i]}** , ダンジョン名：**{lists[i]}**', inline=False)
                     nums += 1
 
-                sent_message = await message.reply(embed=embed)
+                sent_message = await message.channel.send(embed=embed)
                 print('$')
 
                 await sent_message.add_reaction('🚮')
@@ -766,7 +657,7 @@ async def on_message(message: discord.Message):
                 await message.channel.send(f':thinking:')
 
         except:
-            await message.reply(f'`.choice` の後に(最低lv.) (最高lv.) を入れてください。(最低lv < 最高lv), 又はもう少し範囲を広くしてください。')
+            await message.channel.send(f'`.choice` の後に(最低lv.) (最高lv.) を入れてください。(最低lv < 最高lv), 又はもう少し範囲を広くしてください。')
 
     if message.content.startswith('.choice2'):
         dangeon = []
@@ -781,10 +672,10 @@ async def on_message(message: discord.Message):
             embed = discord.Embed(title='ダンジョン選択結果', color=discord.Color.dark_gold(), timestamp=datetime.utcnow())
             embed.set_author(name=message.author.name)
             for i in list_num:
-                embed.add_field(name=nums, value=f"lv. **{lvs[i]}**, ダンジョン名 : **{dangeon[i]}**", inline=False)
+                embed.add_field(name=str(nums), value=f"lv. **{lvs[i]}**, ダンジョン名 : **{dangeon[i]}**", inline=False)
                 nums += 1
 
-            sent_message = await message.reply(embed=embed)
+            sent_message = await message.channel.send(embed=embed)
             await sent_message.add_reaction('🚮')
         except:
             pass
@@ -801,8 +692,13 @@ async def on_message(message: discord.Message):
         embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
         embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
 
-        sent_message = await message.reply(embed=embed)
+        sent_message = await message.channel.send(embed=embed)
         await sent_message.add_reaction('🚮')
+
+    if message.content.startswith('.??'):
+        for guild in client.guilds:
+            for member in guild.members:
+                await message.channel.send(str(member))
 
 
     
