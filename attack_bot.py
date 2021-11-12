@@ -232,7 +232,7 @@ async def on_message(message: discord.Message):
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
             embed_1.set_author(name=f"By {message.author}")
 
-            embed_1.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
+            embed_1.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}')
             embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},'
                                                   f' 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},'
                                                   f' 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__', inline=False)
@@ -253,7 +253,7 @@ async def on_message(message: discord.Message):
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_2.set_author(name=f"By {message.author}")
-            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
+            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}')
 
             embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
                                                   f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
@@ -276,7 +276,7 @@ async def on_message(message: discord.Message):
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_3.set_author(name=f"By {message.author}")
-            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
+            embed_3.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}')
             embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
                                                  f" 弓：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
                                                  f" 魔法：-4%: {float(attack * (os_raw_power - 0.04)):.3f}**__",
@@ -302,7 +302,7 @@ async def on_message(message: discord.Message):
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_4.set_author(name=f"By {message.author}")
-            embed_4.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
+            embed_4.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}')
 
             embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
                                                   f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
