@@ -3,14 +3,26 @@ import random
 from datetime import datetime
 from math import ceil
 import nextcord as discord
+from nextcord.ext import commands
 from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
+from definition import tokkoulist
+import logging
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(
+    filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 # import discord
 # from discord.ext import commands
 
 # Jobについて変更
 
-client = discord.Client()
+# bot = discord.bot()
+bot = commands.Bot(command_prefix='.')
 
 '''
 ルーンオブアルカディア Lux et Tenebrae ,~Rune of Arcadia~ 追憶と創成の間 :
@@ -108,85 +120,11 @@ class HugaButton(discord.ui.Button):
         await interaction.response.send_message(f'{interaction.user.display_name}は{self.label}を押しました')
 
 
-@client.event
+@bot.event
 async def makeButton(ctx: commands.context, *args):
     await ctx.send('Press!', view=HogeButton(args))
 '''
 
-
-async def tokkoulist(message, dmg, os_power, tokkou):
-    if len(tokkou) == 0:
-        dmg_all = dmg * os_power
-        return dmg_all
-
-    elif 1 <= len(tokkou) <= 5:
-        if '4.5' in tokkou:
-            print(tokkou)
-            tokkou.remove('4.5')
-            print(tokkou)
-            tokkou.append('4_5')
-            print(tokkou)
-
-        tokkou_list = list(set(tokkou))
-        tokkou_add = 1.0
-        alpha = 0
-
-        if len(tokkou) != len(tokkou_list):
-            print("$")
-            await message.channel.send(f"{message.author.mention}, 重複しています。")
-
-        elif (str("4_5") in tokkou) and (str("5") in tokkou):
-            await message.channel.send(f"{message.author.mention}, 4_5と5は同時に装着できません")
-
-        elif (str('4_5') in tokkou) and (str('leg') in tokkou):
-            await message.channel.send(f"{message.author.mention}, 4_5とLEGEND石は同時に装着できません")
-
-        elif (str('leg') in tokkou) and (str('5') in tokkou):
-            await message.channel.send(f"{message.author.mention}, 5とLEGEND石は同時に装着できません")
-
-        else:
-            if str('1') in tokkou:
-                tokkou_add *= 1.1
-                tokkou.remove("1")
-                print("1", tokkou_add, tokkou)
-
-            if str('2') in tokkou:
-                tokkou_add *= 1.15
-                tokkou.remove("2")
-                print("2", tokkou_add, tokkou)
-
-            if str('3') in tokkou:
-                tokkou_add *= 1.23
-                tokkou.remove("3")
-                print("3", tokkou_add, tokkou)
-
-            if str('4') in tokkou:
-                tokkou_add *= 1.35
-                tokkou.remove('4')
-                print("4", tokkou_add, tokkou)
-
-            if str('4_5') in tokkou:
-                tokkou_add *= 1.40
-                tokkou.remove("4_5")
-                print("4_5", tokkou_add, tokkou)
-
-            if str('5') in tokkou:
-                tokkou_add *= 1.55
-                tokkou.remove("5")
-                print("5", tokkou_add, tokkou)
-
-            if str('leg') in tokkou:
-                alpha = (dmg * 0.06)
-                tokkou_add *= 1.55
-                tokkou.remove("leg")
-                print("leg", tokkou_add, tokkou)
-
-                #####
-            alldmg = dmg * os_power * tokkou_add + alpha
-            return alldmg
-
-
-@client.event
 async def rand_ints_nodup(a, k):
     ns = []
     while len(ns) < k:
@@ -196,51 +134,59 @@ async def rand_ints_nodup(a, k):
     return ns
 
 
-@client.event
+@bot.event
 async def on_message_delete(message):
     print(message)
 
 
-@client.event
+
+@bot.event
 async def on_ready():
-    print('Logged in as: ' + client.user.name + ', With ID:' + str(client.user.id))
+    print('Logged in as: ' + bot.user.name + ', With ID:' + str(bot.user.id))
     print('Ver.:' + discord.__version__)
     channelid = 886185192530780160
     channelid_2 = 886495611728302091
-    for channel in client.get_all_channels():
+    for channel in bot.get_all_channels():
         if (channel.id == channelid) or (channel.id == channelid_2):
             await channel.send("On Ready")
 
+@bot.command()
+async def a(ctx, arg):
+    print('a')
+    await ctx.send(arg)
 
-@client.event
+@bot.event
 async def on_resumed():
     channelid = 886185192530780160
     channelid_2 = 886495611728302091
-    for channel in client.get_all_channels():
+    for channel in bot.get_all_channels():
         if (channel.id == channelid) or (channel.id == channelid_2):
             await channel.send("On Resumed")
 
 
-@client.event
+
+
+
+@bot.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    if payload.user_id == client.user.id:
+    if payload.user_id == bot.user.id:
         return
 
     # if the reacted message is the bot's
     # and the person who reacted is the person who typed the command
-    channel = client.get_channel(payload.channel_id)
+    channel = bot.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
-    if message.author == client.user:
+    if message.author == bot.user:
         if str(payload.emoji) in ('🚮', '✖️', '🗑️'):
             await message.delete()
 
 
-@client.event
+@bot.event
 async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
     print(reaction, user)
 
 
-@client.event
+@bot.event
 async def on_message(message: discord.Message):
     if message.content.startswith('.dmg'):
         msg = message.content.split()
@@ -277,7 +223,6 @@ async def on_message(message: discord.Message):
 
             dmg = float(msg[1])
             os = int(msg[2])
-            tokkou_self = msg[3:]
             tokkou = msg[3:]
             os_power = 1.0
             os_raw_power = osdict[os]
@@ -286,7 +231,8 @@ async def on_message(message: discord.Message):
             embed_1 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
             embed_1.set_author(name=f"By {message.author}")
-            embed_1.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {tokkou_self}')
+
+            embed_1.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
             embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},'
                                                   f' 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},'
                                                   f' 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__', inline=False)
@@ -305,8 +251,9 @@ async def on_message(message: discord.Message):
 
             embed_2 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
-            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {tokkou_self}')
+
             embed_2.set_author(name=f"By {message.author}")
+            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
 
             embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
                                                   f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
@@ -329,7 +276,7 @@ async def on_message(message: discord.Message):
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_3.set_author(name=f"By {message.author}")
-            embed_3.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {tokkou_self}')
+            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
             embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
                                                  f" 弓：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
                                                  f" 魔法：-4%: {float(attack * (os_raw_power - 0.04)):.3f}**__",
@@ -355,7 +302,8 @@ async def on_message(message: discord.Message):
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_4.set_author(name=f"By {message.author}")
-            embed_4.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {tokkou_self}')
+            embed_4.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_power}\n魔法石： {tokkou}\n魔法石倍率：')
+
             embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
                                                   f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
                                                   f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
@@ -394,7 +342,7 @@ async def on_message(message: discord.Message):
             await sent_message.add_reaction(emoji_3)
             await sent_message.add_reaction(emoji_4)
             '''
-            print(message.author, client.user)
+            print(message.author, bot.user)
             emoji_list = ['⏪', '⏩']
             page = 0
             embed_list = [embed_1, embed_2, embed_3, embed_4]
@@ -411,12 +359,12 @@ async def on_message(message: discord.Message):
             while True:
                 try:
                     # リアクションが付けられるまで待機
-                    reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
+                    reaction, user = await bot.wait_for('reaction_add', timeout=20.0, check=check)
 
                 except asyncio.TimeoutError:
                     # 一定時間経ったら消す
                     # for remove_emoji in emoji_list:
-                    # await sent_message.remove_reaction(emoji=remove_emoji, member=client.user)
+                    # await sent_message.remove_reaction(emoji=remove_emoji, member=bot.user)
                     await sent_message.clear_reactions()
                     break
 
@@ -697,10 +645,11 @@ async def on_message(message: discord.Message):
         await sent_message.add_reaction('🚮')
 
     if message.content.startswith('.??'):
-        for guild in client.guilds:
+        for guild in bot.guilds:
             for member in guild.members:
                 await message.channel.send(str(member))
 
+    await bot.process_commands(message)
 
     
 client.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
