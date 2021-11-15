@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+from datetime import datetime
 import random
 from math import ceil
 
@@ -151,7 +151,7 @@ async def a(ctx, arg):
 
 @bot.command()
 async def help(ctx):
-    embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold())
+    embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=datetime.utcnow())
     embed.set_author(name=ctx.author.name)
     embed.add_field(name='ヘルプ', value='.help', inline=False)
     embed.add_field(
