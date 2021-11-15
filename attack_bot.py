@@ -1,6 +1,6 @@
 import asyncio
 import random
-from datetime import datetime
+import datetime
 from math import ceil
 import nextcord as discord
 from nextcord.ext import commands
@@ -148,7 +148,7 @@ async def on_ready():
     channelid_2 = 886495611728302091
     for channel in bot.get_all_channels():
         if (channel.id == channelid) or (channel.id == channelid_2):
-            await channel.send(f"On Ready : {datetime.date.today()}")
+            await channel.send(f"On Ready : {datetime.utcnow()}")
 
 @bot.command()
 async def a(ctx, arg):
