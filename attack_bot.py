@@ -16,6 +16,7 @@ from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
 
 # bot = discord.bot()
 bot = commands.Bot(command_prefix='.')
+bot.remove_command('help')
 
 '''
 ルーンオブアルカディア Lux et Tenebrae ,~Rune of Arcadia~ 追憶と創成の間 :
@@ -656,7 +657,7 @@ async def on_message(message: discord.Message):
 
         sent_message = await message.channel.send(embed=embed)
         await sent_message.add_reaction('🚮')
-        
+
         """
     if message.content.startswith('.??'):
         for guild in bot.guilds:
