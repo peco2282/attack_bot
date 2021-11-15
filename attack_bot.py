@@ -163,7 +163,7 @@ async def help(ctx):
     embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
     embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
 
-    sent_message = await ctx.channel.send(embed=embed)
+    sent_message = await ctx.send(embed=embed)
     await sent_message.add_reaction('🚮')
 """
 @bot.event
