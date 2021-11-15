@@ -1,20 +1,13 @@
 import asyncio
-import random
 import datetime
+import random
 from math import ceil
+
 import nextcord as discord
 from nextcord.ext import commands
-from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
-from definition import tokkoulist
-import logging
 
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(
-    filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter(
-    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+from definition import tokkoulist
+from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
 
 # import discord
 # from discord.ext import commands
@@ -154,6 +147,23 @@ async def on_ready():
 async def a(ctx, arg):
     print('a')
     await ctx.send(arg)
+
+@bot.command()
+async def help(ctx):
+    embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=datetime.utcnow())
+    embed.set_author(name=ctx.author.name)
+    embed.add_field(name='ヘルプ', value='.help', inline=False)
+    embed.add_field(
+        name='ダメージ計算', value='.dmg [攻撃力] [OS] [魔法石(1~5, ただし4_5, 5, LEGは重複不可)]', inline=False)
+    embed.add_field(
+        name='職業込みでのダメージ計算', value='.job [攻撃力] [OS] [魔法石(1~5, ただし4_5と5は重複不可)]', inline=False)
+    embed.add_field(
+        name='キャスター', value='.cas [CT] [CTPerk] [魔法石(1 ~ 5)]', inline=False)
+    embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
+    embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
+
+    sent_message = await ctx.channel.send(embed=embed)
+    await sent_message.add_reaction('🚮')
 """
 @bot.event
 async def on_resumed():
@@ -629,6 +639,8 @@ async def on_message(message: discord.Message):
             await sent_message.add_reaction('🚮')
         except:
             pass
+
+        """
     if message.content.startswith('.help'):
         embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=datetime.utcnow())
         embed.set_author(name=message.author.name)
@@ -644,7 +656,8 @@ async def on_message(message: discord.Message):
 
         sent_message = await message.channel.send(embed=embed)
         await sent_message.add_reaction('🚮')
-
+        
+        """
     if message.content.startswith('.??'):
         for guild in bot.guilds:
             for member in guild.members:
