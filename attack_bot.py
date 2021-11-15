@@ -148,7 +148,7 @@ async def on_ready():
     channelid_2 = 886495611728302091
     for channel in bot.get_all_channels():
         if (channel.id == channelid) or (channel.id == channelid_2):
-            await channel.send(f"On Ready : {datetime.utcnow()}")
+            await channel.send(f"On Ready : {datetime.datetime.utcnow()}")
 
 @bot.command()
 async def a(ctx, arg):
