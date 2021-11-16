@@ -445,8 +445,8 @@ async def on_message(message: discord.Message):
             embed_2.set_author(name=message.author.name)
 
             embed_2.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
-                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4:.3f}__**, **(詠唱時：__{attack * 8:.3f}__**)'
-                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 :.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98 * (os_power + 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_power + 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_power + 0.05):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 * (os_power + 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
                               inline=False)
 
             embed_2.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
