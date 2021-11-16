@@ -405,7 +405,8 @@ async def on_message(message: discord.Message):
             dmg = float(msg[1])
             os = int(msg[2])
             tokkou = msg[3:]
-            os_power = osdict[os]
+            os_raw_power = osdict[os]
+            os_power = 1.0
             print(os_power)
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
@@ -415,28 +416,28 @@ async def on_message(message: discord.Message):
             embed_1.set_author(name=message.author.name)
 
             embed_1.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
-                              value=f'メテオストライク (スペシャル)：**__{attack * 9:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4:.3f}__**, **(詠唱時：__{attack * 8:.3f}__**)'
-                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * os_raw_power:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * os_raw_power:.3f}__**, **(詠唱時：__{attack * 8 * os_raw_power:.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * os_raw_power:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
                               inline=False)
 
             embed_1.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
-                              value=f'ショックストーン (スペシャル)：**__{attack * 7:.3f}__**'
-                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * os_raw_power:.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * os_raw_power:.3f}__**', inline=False)
 
             embed_1.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
-                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7:.3f}__**'
-                                    f'\n雪柱 (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * os_raw_power:.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * os_raw_power:.3f}__**', inline=False)
 
             embed_1.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
-                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5:.3f}__, パッシブあり：__{attack * 12.5 * 1.5:.3f}__**'
-                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5:.3f}__**'
-                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5:.3f}__**', inline=False)
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * os_raw_power:.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * os_raw_power:.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * os_raw_power:.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * os_raw_power:.3f}__**', inline=False)
 
             embed_1.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
-                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * os_raw_power:.3f}__**', inline=False)
 
             embed_1.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
-                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * os_raw_power:.3f}**__')
 
             embed_2 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -445,8 +446,8 @@ async def on_message(message: discord.Message):
             embed_2.set_author(name=message.author.name)
 
             embed_2.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
-                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98 * (os_power + 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_power + 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_power + 0.05):.3f}__**)'
-                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 * (os_power + 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98 * (os_raw_power + 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power + 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power + 0.05):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 * (os_raw_power + 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
                               inline=False)
 
             embed_2.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
