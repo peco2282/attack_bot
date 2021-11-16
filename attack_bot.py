@@ -18,106 +18,6 @@ from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
 bot = commands.Bot(command_prefix='.')
 bot.remove_command('help')
 
-'''
-ルーンオブアルカディア Lux et Tenebrae ,~Rune of Arcadia~ 追憶と創成の間 :
-
-メテオストライク	スペシャル　  x9
-マジックボール	ノーマル    x4
-ライトニングボルト	ノーマル    x3
-ファイヤ・ボルケーノ	ノーマル (ルーンキャスター)    x22
-
-
-氷龍の聖弓 IceCave
-
-フロストアロー	スペシャル    x5
-アイスショット	ノーマル    x1.5
-
-
-浮世の冥剣 Loftgain ・ 死神の弓 Votive
-
-バーサーク	スペシャル    x2.5
-狂気	ノーマル    x1.5
-レイジ	ノーマル    x2
-
-
-Dorachenbogen・HässlichesBogen ドラゴンの谷
-
--黒竜- ヘイロン -滅-	スペシャル    x8
-
-
-Satans Bote (ストーリー報酬) エイドリアン城
-
-血の斬撃	スペシャル    x2.5
-
-
-Angel_auf_Erden エイドリアン城
-
-ショックストーン	スペシャル    x7
-トゥルーロック	ノーマル     x4
-
-
-†Twilight HeavenRay† 輝煌の残滓
-神の鉄槌	スペシャル
-
-光ある場所に	パッシブ
-
-
-
-九例の弓 Clay Dungeon
-
-遠距離スナイプ	スペシャル    x6 / スタン時 x13
-ロックオン	ノーマル    x1.5
-
-
-
-×Heartsbane× ムスペルへイム(バジリスク溶岩洞窟)
-
-炎帝 ~バジリスクの炎息~	スペシャル    x8
-猛火斬り	ノーマル    x1.2
-'''
-
-'''
-下剋上(Boss:1.2, Mob:0.7)
-
-ボルケ(22)
-
-マジックボール(8倍, 4倍)
-
-ショックストーン(7)
-
-カオブリ(7)
-
-雪柱(4)
-
-オーバーシュート(1.875(スキルあり), 1.25(スキルなし))
-
-覚醒使用時(2)
-
-血の斬撃(2.5)
-
-ヘイロン -滅-(8)
-'''
-
-'''
-class HogeButton(discord.ui.View):
-    def __init__(self, args):
-        super().__init__()
-        for txt in args:
-            self.add_item(HugaButton(txt))
-
-
-class HugaButton(discord.ui.Button):
-    def __init__(self, txt: str):
-        super().__init__(label=txt, style=discord.ButtonStyle.red)
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f'{interaction.user.display_name}は{self.label}を押しました')
-
-
-@bot.event
-async def makeButton(ctx: commands.context, *args):
-    await ctx.send('Press!', view=HogeButton(args))
-'''
 
 async def rand_ints_nodup(a, k):
     ns = []
@@ -535,7 +435,7 @@ async def on_message(message: discord.Message):
             embed_1.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
 
-            embed_1.add_field(name=f'Dorachenbogen・HässlichesBogen (In ドラゴンの谷)',
+            embed_1.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
 
             embed_2 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
@@ -568,7 +468,36 @@ async def on_message(message: discord.Message):
             embed_2.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
 
-            await message.channel.send(embed=embed_1)
+            embed_3 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：アーチャー**")
+
+            embed_3.set_author(name=message.author.name)
+
+            embed_3.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4:.3f}__**, **(詠唱時：__{attack * 8:.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_3.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7:.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+
+            embed_3.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7:.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+
+            embed_3.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5:.3f}__, パッシブあり：__{attack * 12.5 * 1.5:.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5:.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5:.3f}__**', inline=False)
+
+            embed_3.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
+
+            embed_3.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
+            await message.channel.send(embed=embed_2)
 
 
         except:
