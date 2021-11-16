@@ -239,7 +239,7 @@ async def on_message(message: discord.Message):
             os_power = 1.0
             os_raw_power = osdict[os]
             attack = await tokkoulist(message, dmg, os_power, tokkou)
-            print(f'{attack}, {dmg}, {os}, {tokkou}, {os_power}')
+            print(f'a{attack},a {dmg},a {os},a {tokkou},a {os_power}')
             embed_1 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
                                     url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
             embed_1.set_author(name=f"By {message.author}")
@@ -565,7 +565,7 @@ async def on_message(message: discord.Message):
             embed_2.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
 
-            embed_2.add_field(name=f'Dorachenbogen・HässlichesBogen (In ドラゴンの谷)',
+            embed_2.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
 
             await message.channel.send(embed=embed_1)
