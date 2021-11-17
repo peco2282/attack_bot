@@ -9,6 +9,13 @@ from nextcord.ext import commands
 from definition import tokkoulist
 from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
 
+import pytz
+
+
+now = datetime.now(pytz.timezone('Asia/Tokyo'))
+
+# from Embed import *
+
 # import discord
 # from discord.ext import commands
 
@@ -33,7 +40,6 @@ async def on_message_delete(message):
     print(message)
 
 
-
 @bot.event
 async def on_ready():
     print('Logged in as: ' + bot.user.name + ', With ID:' + str(bot.user.id))
@@ -42,16 +48,18 @@ async def on_ready():
     channelid_2 = 886495611728302091
     for channel in bot.get_all_channels():
         if (channel.id == channelid) or (channel.id == channelid_2):
-            await channel.send(f"On Ready : {datetime.utcnow()}")
+            await channel.send(f"On Ready : {now}")
+
 
 @bot.command()
 async def a(ctx, arg):
     print('a')
     await ctx.send(arg)
 
+
 @bot.command()
 async def help(ctx):
-    embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=datetime.utcnow())
+    embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=now)
     embed.set_author(name=ctx.author.name)
     embed.add_field(name='ヘルプ', value='.help', inline=False)
     embed.add_field(
@@ -65,6 +73,8 @@ async def help(ctx):
 
     sent_message = await ctx.send(embed=embed)
     await sent_message.add_reaction('🚮')
+
+
 """
 @bot.event
 async def on_resumed():
@@ -74,8 +84,6 @@ async def on_resumed():
         if (channel.id == channelid) or (channel.id == channelid_2):
             await channel.send("On Resumed")
 """
-
-
 
 
 @bot.event
@@ -99,6 +107,20 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
 
 @bot.event
 async def on_message(message: discord.Message):
+    # --------------------------
+    emoji_selector = u'\U0000fe0f\U000020e3'
+    emoji_1 = u'\N{DIGIT ONE}' + emoji_selector
+    emoji_2 = u'\N{DIGIT TWO}' + emoji_selector  # 2⃣
+    emoji_3 = u'\N{DIGIT THREE}' + emoji_selector  # 3⃣
+    emoji_4 = u'\N{DIGIT FOUR}' + emoji_selector
+    emoji_5 = u'\N{DIGIT FIVE}' + emoji_selector
+    emoji_6 = u'\N{DIGIT SIX}' + emoji_selector
+    emoji_7 = u'\N{DIGIT SEVEN}' + emoji_selector
+    emoji_8 = u'\N{DIGIT EIGHT}' + emoji_selector
+    emoji_9 = u'\N{DIGIT NINE}' + emoji_selector
+
+    # --------------------------
+
     if message.content.startswith('.dmg'):
         msg = message.content.split()
         # ダメージ・OS・魔法石
@@ -118,7 +140,6 @@ async def on_message(message: discord.Message):
             print(os_power, attack, tokkou)
             sent_message = await message.channel.send(f"{message.author.mention}\n素火力 : {dmg}\nOS : {os}\n"
                                                       f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
-            sent_message.is_system()
             await sent_message.add_reaction('🚮')
 
 
@@ -140,109 +161,111 @@ async def on_message(message: discord.Message):
             os_raw_power = osdict[os]
             attack = await tokkoulist(message, dmg, os_power, tokkou)
             print(f'a{attack},a {dmg},a {os},a {tokkou},a {os_power}')
-            embed_1 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
-                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
-            embed_1.set_author(name=f"By {message.author}")
 
-            embed_1.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
-            embed_1.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},'
-                                                  f' 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},'
-                                                  f' 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__', inline=False)
+            embed_1_job = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=now,
+                                        url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+            embed_1_job.set_author(name=f"By {message.author}")
 
-            embed_1.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
-                                                  f" 弓：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
-                                                  f" 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__",
-                              inline=False)
+            embed_1_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_1_job.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},'
+                                                      f' 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},'
+                                                      f' 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__',
+                                  inline=False)
 
-            embed_1.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
-                                                  f" 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
-                                                  f" 魔法：+5%: {float(attack * (os_raw_power + 0.05)):.3f}**__",
-                              inline=False)
+            embed_1_job.add_field(name='アーチャー', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
+                                                      f" 弓：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
+                                                      f" 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__",
+                                  inline=False)
 
-            embed_1.set_footer(text='Page 1 of 4')
+            embed_1_job.add_field(name='マジシャン', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
+                                                      f" 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},"
+                                                      f" 魔法：+5%: {float(attack * (os_raw_power + 0.05)):.3f}**__",
+                                  inline=False)
 
-            embed_2 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
-                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+            embed_1_job.set_footer(text='Page 1 of 4')
 
-            embed_2.set_author(name=f"By {message.author}")
-            embed_2.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_2_job = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=now,
+                                        url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
-            embed_2.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
-                                                  f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
-                                                  f" 魔法： -5%: {float(attack * (os_raw_power - 0.05)):.3f}**__",
-                              inline=False)
+            embed_2_job.set_author(name=f"By {message.author}")
+            embed_2_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
 
-            embed_2.add_field(name='ボウマン', value=f"__**攻撃力：剣： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
-                                                 f" 弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
-                                                 f" 魔法： -5%: {float(attack * (os_raw_power - 0.05)):.3f}**__",
-                              inline=False)
+            embed_2_job.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                      f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                      f" 魔法： -5%: {float(attack * (os_raw_power - 0.05)):.3f}**__",
+                                  inline=False)
 
-            embed_2.add_field(name='メイジ', value=f"__**攻撃力：剣： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
-                                                f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
-                                                f" 魔法：+10: {float(attack * (os_raw_power + 0.10)):.3f}**__",
-                              inline=False)
+            embed_2_job.add_field(name='ボウマン', value=f"__**攻撃力：剣： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                     f" 弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                     f" 魔法： -5%: {float(attack * (os_raw_power - 0.05)):.3f}**__",
+                                  inline=False)
 
-            embed_2.set_footer(text='Page 2 of 4')
+            embed_2_job.add_field(name='メイジ', value=f"__**攻撃力：剣： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                    f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
+                                                    f" 魔法：+10: {float(attack * (os_raw_power + 0.10)):.3f}**__",
+                                  inline=False)
 
-            embed_3 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
-                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+            embed_2_job.set_footer(text='Page 2 of 4')
 
-            embed_3.set_author(name=f"By {message.author}")
-            embed_3.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
-            embed_3.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
-                                                 f" 弓：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
-                                                 f" 魔法：-4%: {float(attack * (os_raw_power - 0.04)):.3f}**__",
-                              inline=False)
+            embed_3_job = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=now,
+                                        url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
-            embed_3.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f}, "
-                                                    f" 弓：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
-                                                    f" 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__",
-                              inline=False)
+            embed_3_job.set_author(name=f"By {message.author}")
+            embed_3_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_3_job.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
+                                                     f" 弓：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
+                                                     f" 魔法：-4%: {float(attack * (os_raw_power - 0.04)):.3f}**__",
+                                  inline=False)
 
-            embed_3.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack * (os_raw_power - 0.10)):.3f},"
-                                                  f" 弓：-10%: {float(attack * (os_raw_power - 0.10)):.3f},"
-                                                  f" 魔法：-10%: {float(attack * (os_raw_power - 0.10)):.3f}**__",
-                              inline=False)
+            embed_3_job.add_field(name='ドラゴンキラー', value=f"__**攻撃力：剣：-2%: {float(attack * (os_raw_power - 0.02)):.3f}, "
+                                                        f" 弓：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
+                                                        f" 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__",
+                                  inline=False)
 
-            embed_3.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
+            embed_3_job.add_field(name='プリースト', value=f"__**攻撃力：剣：-10%: {float(attack * (os_raw_power - 0.10)):.3f},"
+                                                      f" 弓：-10%: {float(attack * (os_raw_power - 0.10)):.3f},"
+                                                      f" 魔法：-10%: {float(attack * (os_raw_power - 0.10)):.3f}**__",
+                                  inline=False)
+
+            embed_3_job.add_field(name='スカーミッシャー', value=f"__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
+                                                         f" 弓：{float(attack):.3f},"
+                                                         f" 魔法：{float(attack):.3f}**__", inline=False)
+
+            embed_3_job.set_footer(text='Page 3 of 4')
+
+            embed_4_job = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=now,
+                                        url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+
+            embed_4_job.set_author(name=f"By {message.author}")
+            embed_4_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+
+            embed_4_job.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                      f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                      f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
+                                  inline=False)
+
+            embed_4_job.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                         f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                         f" 魔法：+7%: {float(attack * (os_raw_power + 0.07)):.3f}**__",
+                                  inline=False)
+
+            embed_4_job.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                       f"  弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                       f" 魔法：+10%: {float(attack * (os_raw_power + 0.10)):.3f}**__",
+                                  inline=False)
+
+            embed_4_job.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
                                                      f" 弓：{float(attack):.3f},"
                                                      f" 魔法：{float(attack):.3f}**__", inline=False)
 
-            embed_3.set_footer(text='Page 3 of 4')
+            embed_4_job.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
+                                                     f" 弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
+                                                     f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
+                                  inline=False)
 
-            embed_4 = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
-                                    url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
+            embed_4_job.set_footer(text='Page 4 of 4')
 
-            embed_4.set_author(name=f"By {message.author}")
-            embed_4.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
-
-            embed_4.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
-                                                  f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
-                                                  f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
-                              inline=False)
-
-            embed_4.add_field(name='ルーンキャスター', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
-                                                     f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
-                                                     f" 魔法：+7%: {float(attack * (os_raw_power + 0.07)):.3f}**__",
-                              inline=False)
-
-            embed_4.add_field(name='スペランカー', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
-                                                   f"  弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
-                                                   f" 魔法：+10%: {float(attack * (os_raw_power + 0.10)):.3f}**__",
-                              inline=False)
-
-            embed_4.add_field(name='アーサー', value=f"__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},"
-                                                 f" 弓：{float(attack):.3f},"
-                                                 f" 魔法：{float(attack):.3f}**__", inline=False)
-
-            embed_4.add_field(name='シーカー', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
-                                                 f" 弓：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
-                                                 f" 魔法：-7%: {float(attack * (os_raw_power - 0.07)):.3f}**__",
-                              inline=False)
-
-            embed_4.set_footer(text='Page 4 of 4')
-
-            sent_message = await message.channel.send(embed=embed_1)
+            sent_message = await message.channel.send(embed=embed_1_job)
             '''+
             emoji_selector = u'\U0000fe0f\U000020e3'
             emoji_1 = u'\N{DIGIT ONE}' + emoji_selector
@@ -257,7 +280,7 @@ async def on_message(message: discord.Message):
             print(message.author, bot.user)
             emoji_list = ['⏪', '⏩']
             page = 0
-            embed_list = [embed_1, embed_2, embed_3, embed_4]
+            embed_list = [embed_1_job, embed_2_job, embed_3_job, embed_4_job]
 
             for add_emoji in emoji_list:
                 await sent_message.add_reaction(add_emoji)
@@ -409,7 +432,9 @@ async def on_message(message: discord.Message):
             os_power = 1.0
             print(os_power)
             attack = await tokkoulist(message, dmg, os_power, tokkou)
-            embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+
+            # ノービス
+            embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
                                     description=f"**職業：ノービス**")
 
@@ -439,70 +464,631 @@ async def on_message(message: discord.Message):
             embed_1.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * os_raw_power:.3f}**__')
 
-            embed_2 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+            # ソルジャー
+            embed_2 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
                                     description=f"**職業：ソルジャー**")
 
             embed_2.set_author(name=message.author.name)
 
             embed_2.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
-                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98 * (os_raw_power + 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power + 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power + 0.05):.3f}__**)'
-                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 * (os_raw_power + 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * 0.98 * (os_raw_power - 0.02):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.02):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.02):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * 0.98 * (os_raw_power - 0.02):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
                               inline=False)
 
             embed_2.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
-                              value=f'ショックストーン (スペシャル)：**__{attack * 7:.3f}__**'
-                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power + 0.05):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power + 0.05):.3f}__**', inline=False)
 
             embed_2.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
-                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7:.3f}__**'
-                                    f'\n雪柱 (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.02):.3f}__**', inline=False)
 
             embed_2.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
-                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5:.3f}__, パッシブあり：__{attack * 12.5 * 1.5:.3f}__**'
-                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5:.3f}__**'
-                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5:.3f}__**', inline=False)
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.02):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.02):.3f}__**',
+                              inline=False)
 
             embed_2.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
-                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power + 0.05):.3f}__**', inline=False)
 
             embed_2.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
-                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.02):.3f}**__')
 
-            embed_3 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=datetime.utcnow(),
+            # アーチャー
+            embed_3 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
                                     description=f"**職業：アーチャー**")
 
             embed_3.set_author(name=message.author.name)
 
             embed_3.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
-                              value=f'メテオストライク (スペシャル)：**__{attack * 9:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4:.3f}__**, **(詠唱時：__{attack * 8:.3f}__**)'
-                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.02):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.02):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.02):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.02):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
                               inline=False)
 
             embed_3.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
-                              value=f'ショックストーン (スペシャル)：**__{attack * 7:.3f}__**'
-                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.02):.3f}__**', inline=False)
 
             embed_3.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
-                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7:.3f}__**'
-                                    f'\n雪柱 (ノーマル)：**__{attack * 4:.3f}__**', inline=False)
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power + 0.05):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power + 0.05):.3f}__**', inline=False)
 
             embed_3.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
-                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5:.3f}__, パッシブあり：__{attack * 12.5 * 1.5:.3f}__**'
-                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5:.3f}__**'
-                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5:.3f}__**', inline=False)
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power + 0.05):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power + 0.05):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power + 0.05):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power + 0.05):.3f}__**',
+                              inline=False)
 
             embed_3.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
-                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5:.3f}__**', inline=False)
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.02):.3f}__**', inline=False)
 
             embed_3.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
-                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8:.3f}**__')
-            await message.channel.send(embed=embed_2)
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power + 0.05):.3f}**__')
 
+            # マジシャン
+            embed_4 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：マジシャン**")
+
+            embed_4.set_author(name=message.author.name)
+
+            embed_4.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power + 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power + 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power + 0.05):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power + 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_4.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.02):.3f}__**', inline=False)
+
+            embed_4.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.02):.3f}__**', inline=False)
+
+            embed_4.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.02):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.02):.3f}__**',
+                              inline=False)
+
+            embed_4.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.02):.3f}__**', inline=False)
+
+            embed_4.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.02):.3f}**__')
+
+            # ウォーリア
+            embed_5 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：ウォーリア**")
+
+            embed_5.set_author(name=message.author.name)
+
+            embed_5.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.05):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_5.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power + 0.10):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power + 0.10):.3f}__**', inline=False)
+
+            embed_5.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_5.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.05):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.05):.3f}__**',
+                              inline=False)
+
+            embed_5.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power + 0.10):.3f}__**', inline=False)
+
+            embed_5.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.05):.3f}**__')
+
+            # ボウマン
+            embed_6 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：ボウマン**")
+
+            embed_6.set_author(name=message.author.name)
+
+            embed_6.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.05):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.05):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.05):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.05):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_6.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_6.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power + 0.10):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power + 0.10):.3f}__**', inline=False)
+
+            embed_6.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power + 0.10):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power + 0.10):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power + 0.10):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power + 0.10):.3f}__**',
+                              inline=False)
+
+            embed_6.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_6.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power + 0.10):.3f}**__')
+
+            # メイジ
+            embed_7 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：メイジ**")
+
+            embed_7.set_author(name=message.author.name)
+
+            embed_7.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power + 0.10):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power + 0.10):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power + 0.10):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power + 0.10):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_7.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_7.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_7.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.05):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.05):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.05):.3f}__**',
+                              inline=False)
+
+            embed_7.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_7.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.05):.3f}**__')
+            # --------------------------
+
+            # ロウニン
+            embed_8 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：ロウニン**")
+
+            embed_8.set_author(name=message.author.name)
+
+            embed_8.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.04):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.04):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.04):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * os_raw_power:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_8.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.04):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.04):.3f}__**', inline=False)
+
+            embed_8.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.04):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.04):.3f}__**', inline=False)
+
+            embed_8.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.04):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.04):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.04):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.04):.3f}__**',
+                              inline=False)
+
+            embed_8.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.04):.3f}__**', inline=False)
+
+            embed_8.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.04):.3f}**__')
+
+            # ドラゴンキラー
+            embed_9 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                    url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                    description=f"**職業：ドラゴンキラー**")
+
+            embed_9.set_author(name=message.author.name)
+
+            embed_9.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                              value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.02):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.02):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.02):.3f}__**)'
+                                    f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.02):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                              inline=False)
+
+            embed_9.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                              value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.02):.3f}__**'
+                                    f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.02):.3f}__**', inline=False)
+
+            embed_9.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                              value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power + 0.05):.3f}__**'
+                                    f'\n雪柱 (ノーマル)：**__{attack * 4 * os_raw_power:.3f}__**', inline=False)
+
+            embed_9.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                              value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * os_raw_power:.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * os_raw_power:.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * os_raw_power:.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * os_raw_power:.3f}__**', inline=False)
+
+            embed_9.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                              value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * os_raw_power:.3f}__**', inline=False)
+
+            embed_9.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * os_raw_power:.3f}**__')
+
+            # プリースト
+            embed_10 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：プリースト**")
+
+            embed_10.set_author(name=message.author.name)
+
+            embed_10.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.10):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.10):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.10):.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.10):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                               inline=False)
+
+            embed_10.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.10):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.10):.3f}__**', inline=False)
+
+            embed_10.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.10):.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.10):.3f}__**', inline=False)
+
+            embed_10.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.10):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * os_raw_power:.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.10):.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.10):.3f}__**',
+                               inline=False)
+
+            embed_10.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.10):.3f}__**', inline=False)
+
+            embed_10.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.10):.3f}**__')
+
+            # スカ―ミッシャー
+            embed_11 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：スカ―ミッシャー**")
+
+            embed_11.set_author(name=message.author.name)
+
+            embed_11.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * os_raw_power:.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * os_raw_power:.3f}__**, **(詠唱時：__{attack * 8 * os_raw_power:.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * os_raw_power:.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                               inline=False)
+
+            embed_11.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power + 0.05):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power + 0.05):.3f}__**', inline=False)
+
+            embed_11.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * os_raw_power:.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * os_raw_power:.3f}__**', inline=False)
+
+            embed_11.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * os_raw_power:.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * os_raw_power:.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * os_raw_power:.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * os_raw_power:.3f}__**', inline=False)
+
+            embed_11.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.05):.3f}__**', inline=False)
+
+            embed_11.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * os_raw_power:.3f}**__')
+
+            # ハグレモノ
+            embed_12 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：ハグレモノ**")
+
+            embed_12.set_author(name=message.author.name)
+
+            embed_12.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.07):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.07):.3f}__**, **(詠唱時：__{attack * 8 * os_raw_power:.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.07):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                               inline=False)
+
+            embed_12.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_12.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * os_raw_power - 0.07:.3f}__**', inline=False)
+
+            embed_12.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.07):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.07):.3f}__**',
+                               inline=False)
+
+            embed_12.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_12.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.07):.3f}**__')
+
+            # ルーンキャスター
+            embed_13 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：ルーンキャスター**")
+
+            embed_13.set_author(name=message.author.name)
+
+            embed_13.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power + 0.07):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power + 0.07):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power + 0.07):.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power + 0.07):.3f}__**\nファイヤ・ボルケーノ (ノーマル)**：__{attack * 22 * (os_raw_power + 0.07):.3f}__**',
+                               inline=False)
+
+            embed_13.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_13.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_13.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.07):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * os_raw_power:.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.07):.3f}__**',
+                               inline=False)
+
+            embed_13.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_13.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.07):.3f}**__')
+
+            # スペランカー
+            embed_14 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：スペランカー**")
+
+            embed_14.set_author(name=message.author.name)
+
+            embed_14.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power + 0.10) :.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power + 0.10):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power + 0.10):.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power + 0.10):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                               inline=False)
+
+            embed_14.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power + 0.10):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power + 0.10):.3f}__**', inline=False)
+
+            embed_14.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power + 0.10):.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power + 0.10):.3f}__**', inline=False)
+
+            embed_14.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power + 0.10):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power + 0.10):.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power + 0.10):.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power + 0.10):.3f}__**',
+                               inline=False)
+
+            embed_14.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power + 0.10):.3f}__**', inline=False)
+
+            embed_14.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power + 0.10):.3f}**__')
+
+            # アーサー
+            embed_15 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：アーサー**")
+
+            embed_15.set_author(name=message.author.name)
+
+            embed_15.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.07):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.07):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.07):.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.07):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                               inline=False)
+
+            embed_15.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power + 0.07):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power + 0.07):.3f}__**', inline=False)
+
+            embed_15.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_15.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power - 0.07):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power - 0.07):.3f}__**',
+                               inline=False)
+
+            embed_15.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power + 0.07):.3f}__**', inline=False)
+
+            embed_15.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.07):.3f}**__')
+
+            # シーカー
+            embed_16 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
+                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
+                                     description=f"**職業：シーカー**")
+
+            embed_16.set_author(name=message.author.name)
+
+            embed_16.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
+                               value=f'メテオストライク (スペシャル)：**__{attack * 9 * (os_raw_power - 0.07):.3f}__**\nマジックボール (ノーマル)**：__{attack * 4 * (os_raw_power - 0.07):.3f}__**, **(詠唱時：__{attack * 8 * (os_raw_power - 0.07):.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{attack * 3 * (os_raw_power - 0.07):.3f}__**\n**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
+                               inline=False)
+
+            embed_16.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
+                               value=f'ショックストーン (スペシャル)：**__{attack * 7 * (os_raw_power - 0.07):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{attack * 4 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_16.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{attack * 7 * (os_raw_power + 0.07):.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{attack * 4 * (os_raw_power + 0.07):.3f}__**', inline=False)
+
+            embed_16.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
+                               value=f'オーバーシュート (スペシャル)：**__{attack * 12.5 * (os_raw_power + 0.07):.3f}__, パッシブあり：__{attack * 12.5 * 1.5 * os_raw_power:.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{attack * 1.5 * (os_raw_power + 0.07):.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{attack * 1.5 * (os_raw_power + 0.07):.3f}__**',
+                               inline=False)
+
+            embed_16.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
+                               value=f'血の斬撃 (スペシャル)：**__{attack * 2.5 * (os_raw_power - 0.07):.3f}__**', inline=False)
+
+            embed_16.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{attack * 8 * (os_raw_power - 0.07):.3f}**__')
+
+            if msg[0] == '.skill':
+                embed = discord.Embed(title='`.skill` 使い方', timestamp=now)
+                embed.set_author(name=message.author)
+                embed.add_field(name='**`.skill1`**', value=f'{emoji_1}：`ノービス`\n'
+                                                            f'{emoji_2}：`ソルジャー`\n'
+                                                            f'{emoji_3}：`アーチャー`\n'
+                                                            f'{emoji_4}：`マジシャン` \n'
+                                                            f'{emoji_5}：`ウォーリア`\n'
+                                                            f'{emoji_6}：`ボウマン`\n'
+                                                            f'{emoji_7}：`メイジ`',
+                                inline=False)
+
+                embed.add_field(name='**`.skill2`**', value=f'{emoji_1}：`ロウニン`\n'
+                                                            f'{emoji_2}：`ドラゴンキラー`\n'
+                                                            f'{emoji_3}：`プリースト`\n'
+                                                            f'{emoji_4}：`スカ―ミッシャー`\n'
+                                                            f'{emoji_5}：`ハグレモノ`\n'
+                                                            f'{emoji_6}：`ルーンキャスター`\n'
+                                                            f'{emoji_7}：`スペランカー`\n'
+                                                            f'{emoji_8}：`アーサー`\n'
+                                                            f'{emoji_9}：`シーカー`',
+                                inline=False)
+                await message.channel.send(embed=embed)
+
+            '''
+            await sent_message.add_reaction(emoji_1)
+            await sent_message.add_reaction(emoji_2)
+            await sent_message.add_reaction(emoji_3)
+            await sent_message.add_reaction(emoji_4)
+            '''
+
+            if msg[0] == '.skill1':
+                # embed_list_1 = [embed_1, embed_2, embed_3, embed_4, embed_5, embed_6, embed_7]
+                emoji_list_1 = [emoji_1, emoji_2, emoji_3, emoji_4, emoji_5, emoji_6, emoji_7]
+                sent_message = await message.channel.send(embed=embed_1)
+                for emoji in emoji_list_1:
+                    await sent_message.add_reaction(emoji=emoji)
+
+                # リアクションチェック用の関数
+                def check(reaction, user):
+                    # botを呼び出した本人からのリアクションのみ受け付ける
+                    # reaction.message == msg を入れないと複数出したときに全て連動して動いてしまう
+                    return user == message.author and reaction.message == sent_message and str(
+                        reaction.emoji) in emoji_list_1
+                    
+
+                while True:
+                    try:
+                        # リアクションが付けられるまで待機
+                        reaction, user = await bot.wait_for('reaction_add', timeout=20.0, check=check)
+
+                    except asyncio.TimeoutError:
+                        # 一定時間経ったら消す
+                        # for remove_emoji in emoji_list:
+                        # await sent_message.remove_reaction(emoji=remove_emoji, member=bot.user)
+                        await sent_message.clear_reactions()
+                        break
+
+                    else:
+                        # 付けられたリアクションに対応した処理を行う
+                        if str(reaction.emoji) == (emoji_list_1[0]):
+                            await sent_message.edit(embed=embed_1)
+
+                        if str(reaction.emoji) == (emoji_list_1[1]):
+                            await sent_message.edit(embed=embed_2)
+
+                        if str(reaction.emoji) == (emoji_list_1[2]):
+                            await sent_message.edit(embed=embed_3)
+
+                        if str(reaction.emoji) == (emoji_list_1[3]):
+                            await sent_message.edit(embed=embed_4)
+
+                        if str(reaction.emoji) == (emoji_list_1[4]):
+                            await sent_message.edit(embed=embed_5)
+
+                        if str(reaction.emoji) == (emoji_list_1[5]):
+                            await sent_message.edit(embed=embed_6)
+
+                        if str(reaction.emoji) == (emoji_list_1[6]):
+                            await sent_message.edit(embed=embed_7)
+
+                        # リアクションをもう一度押せるように消しておく
+                        await sent_message.remove_reaction(reaction.emoji, message.author)
+
+            elif msg[0] == '.skill2':
+                # embed_list_2 = [embed_8, embed_9, embed_10, embed_11, embed_12, embed_13, embed_14, embed_15, embed_16]
+                emoji_list_2 = [emoji_1, emoji_2, emoji_3, emoji_4, emoji_5, emoji_6, emoji_7, emoji_8, emoji_9]
+                sent_message = await message.channel.send(embed=embed_8)
+
+                for emoji in emoji_list_2:
+                    await sent_message.add_reaction(emoji=emoji)
+
+                # リアクションチェック用の関数
+                def check(reaction, user):
+                    # botを呼び出した本人からのリアクションのみ受け付ける
+                    # reaction.message == msg を入れないと複数出したときに全て連動して動いてしまう
+                    return user == message.author and reaction.message == sent_message and str(
+                        reaction.emoji) in emoji_list_2
+
+                while True:
+                    try:
+                        # リアクションが付けられるまで待機
+                        reaction, user = await bot.wait_for('reaction_add', timeout=20.0, check=check)
+
+                    except asyncio.TimeoutError:
+                        # 一定時間経ったら消す
+                        # for remove_emoji in emoji_list:
+                        # await sent_message.remove_reaction(emoji=remove_emoji, member=bot.user)
+                        await sent_message.clear_reactions()
+                        break
+
+                    else:
+                        
+                        # 付けられたリアクションに対応した処理を行う
+                        if str(reaction.emoji) == (emoji_list_2[0]):
+                            await sent_message.edit(embed=embed_8)
+
+                        if str(reaction.emoji) == (emoji_list_2[1]):
+                            await sent_message.edit(embed=embed_9)
+
+                        if str(reaction.emoji) == (emoji_list_2[2]):
+                            await sent_message.edit(embed=embed_10)
+
+                        if str(reaction.emoji) == (emoji_list_2[3]):
+                            await sent_message.edit(embed=embed_11)
+
+                        if str(reaction.emoji) == (emoji_list_2[4]):
+                            await sent_message.edit(embed=embed_12)
+
+                        if str(reaction.emoji) == (emoji_list_2[5]):
+                            await sent_message.edit(embed=embed_13)
+
+                        if str(reaction.emoji) == (emoji_list_2[6]):
+                            await sent_message.edit(embed=embed_14)
+
+                        if str(reaction.emoji) == (emoji_list_2[7]):
+                            await sent_message.edit(embed=embed_15)
+
+                        if str(reaction.emoji) == (emoji_list_2[8]):
+                            await sent_message.edit(embed=embed_16)
+                            
+                        # リアクションをもう一度押せるように消しておく
+                        await sent_message.remove_reaction(reaction.emoji, message.author)
 
         except:
-            await message.channel.send(f':thinking: {message.author.mention},`.skill [総ダメージ]`')
+            await message.channel.send(f':thinking: {message.author.mention},`.skill1 [総ダメージ] [OS] (魔法石)`')
             pass
 
     if message.content.startswith('.choice1'):
@@ -524,7 +1110,7 @@ async def on_message(message: discord.Message):
             if len(lists) <= 4:
                 print('!Q')
             list_num = await rand_ints_nodup(len(lists), 5)
-            embed = discord.Embed(title='**ダンジョン選択結果**', color=discord.Color.dark_green(), timestamp=datetime.utcnow())
+            embed = discord.Embed(title='**ダンジョン選択結果**', color=discord.Color.dark_green(), timestamp=now)
             embed.set_author(name=message.author.name)
             nums = 1
             print(list_num)
@@ -560,7 +1146,7 @@ async def on_message(message: discord.Message):
                 dangeon.append(i)
                 lvs.append(value)
             nums = 1
-            embed = discord.Embed(title='ダンジョン選択結果', color=discord.Color.dark_gold(), timestamp=datetime.utcnow())
+            embed = discord.Embed(title='ダンジョン選択結果', color=discord.Color.dark_gold(), timestamp=now)
             embed.set_author(name=message.author.name)
             for i in list_num:
                 embed.add_field(name=str(nums), value=f"lv. **{lvs[i]}**, ダンジョン名 : **{dangeon[i]}**", inline=False)
@@ -573,7 +1159,7 @@ async def on_message(message: discord.Message):
 
         """
     if message.content.startswith('.help'):
-        embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=datetime.utcnow())
+        embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=now)
         embed.set_author(name=message.author.name)
         embed.add_field(name='ヘルプ', value='.help', inline=False)
         embed.add_field(
@@ -597,4 +1183,5 @@ async def on_message(message: discord.Message):
     await bot.process_commands(message)
 
 
-bot.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
+# bot.run('ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.jvxLNGUcSseqwjKRcssHSM8SooY')
+bot.run('ODg2NDg2MjA3Mzk0MDk5MjIw.YT2SnQ.7xCgf-xymfPEl519dztE0Gle8Fs')
