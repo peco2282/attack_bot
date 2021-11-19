@@ -124,6 +124,7 @@ async def on_message(message: discord.Message):
         # ダメージ・OS・魔法石
         dmg = float(msg[1])
         os = int(msg[2])
+        tokkou_dmg = msg[3:]
         tokkou = msg[3:]
 
         try:
@@ -134,10 +135,11 @@ async def on_message(message: discord.Message):
             else:
                 os_power = osdict[os]
 
-            attack = await tokkoulist(message, dmg, os_power, tokkou)
+            attack, tokkou_add = await tokkoulist(message, dmg, os_power, tokkou)
             print(os_power, attack, tokkou)
-            sent_message = await message.channel.send(f"{message.author.name}\n素火力 : {dmg}\nOS : {os}\n"
-                                                      f"OS倍率 : {os_power} 倍\n__**攻撃力 : {attack:.5f}**__")
+            sent_message = await message.channel.send(f"**By：{message.author.name}**\n\n素火力 : {dmg}\nOS : {os}\n"
+                                                      f"OS倍率 : {os_power} 倍\n魔法石：{tokkou_dmg}\n魔法石倍率：{tokkou_add}倍\n"
+                                                      f"__**攻撃力 : {attack:.5f}\n**__")
             await sent_message.add_reaction('🚮')
 
 
@@ -157,13 +159,14 @@ async def on_message(message: discord.Message):
             tokkou = msg[3:]
             os_power = 1.0
             os_raw_power = osdict[os]
-            attack = await tokkoulist(message, dmg, os_power, tokkou)
+            attack, tokkou_dmg = await tokkoulist(message, dmg, os_power, tokkou)
 
             embed_1_job = discord.Embed(title='職業', color=discord.Color.dark_green(), timestamp=now,
                                         url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
             embed_1_job.set_author(name=f"By {message.author}")
 
-            embed_1_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_1_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n'
+                                                   f'魔法石： {raw_tokkou}\n魔法石倍率： {tokkou_dmg}倍')
             embed_1_job.add_field(name='ソルジャー', value=f'__**攻撃力：剣：+5%: {float(attack * (os_raw_power + 0.05)):.3f},'
                                                       f' 弓：-2%: {float(attack * (os_raw_power - 0.02)):.3f},'
                                                       f' 魔法：-2%: {float(attack * (os_raw_power - 0.02)):.3f}**__',
@@ -185,7 +188,8 @@ async def on_message(message: discord.Message):
                                         url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_2_job.set_author(name=f"By {message.author}")
-            embed_2_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_2_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}'
+                                                   f'\n魔法石倍率： {tokkou_dmg}倍')
 
             embed_2_job.add_field(name='ウォーリア', value=f"__**攻撃力：剣：+10%: {float(attack * (os_raw_power + 0.10)):.3f},"
                                                       f" 弓： -5%: {float(attack * (os_raw_power - 0.05)):.3f},"
@@ -208,7 +212,8 @@ async def on_message(message: discord.Message):
                                         url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_3_job.set_author(name=f"By {message.author}")
-            embed_3_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_3_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}\n'
+                                                   f'魔法石倍率： {tokkou_dmg}倍')
             embed_3_job.add_field(name='ロウニン', value=f"__**攻撃力：剣：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
                                                      f" 弓：-4%: {float(attack * (os_raw_power - 0.04)):.3f},"
                                                      f" 魔法：-4%: {float(attack * (os_raw_power - 0.04)):.3f}**__",
@@ -234,7 +239,8 @@ async def on_message(message: discord.Message):
                                         url='https://wikiwiki.jp/thelow/%E8%81%B7%E6%A5%AD')
 
             embed_4_job.set_author(name=f"By {message.author}")
-            embed_4_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}')
+            embed_4_job.add_field(name='条件', value=f'素火力： {dmg}\nOS： {os}\nOS倍率： {os_raw_power}\n魔法石： {raw_tokkou}\n'
+                                                   f'魔法石倍率： {tokkou_dmg}倍')
 
             embed_4_job.add_field(name='ハグレモノ', value=f"__**攻撃力：剣：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
                                                       f" 弓：-7%: {float(attack * (os_raw_power - 0.07)):.3f},"
@@ -339,12 +345,12 @@ async def on_message(message: discord.Message):
             if cas_stone_2 != cas_stone_1:
                 await message.channel.send(f"{message.author.mention}, 重複しています。")
 
+            if 'leg' in cas_stone_1:
+                await message.channel.send(f'{message.author}、キャスター石に\'leg\'はありません。')
+
             if '4.5' in cas_stone_2:
-                print(cas_stone_2)
                 cas_stone_2.remove("4.5")
-                print(cas_stone_2)
                 cas_stone_2.append("4_5")
-                print(cas_stone_2)
 
             if (len(cas_stone_1) != len(cas_stone_2)) or (len(cas_stone_2) > 5):
                 await message.channel.send(f':thinking: {message.author.mention}, キャスター石が重複しています。')
@@ -372,7 +378,8 @@ async def on_message(message: discord.Message):
 
             ct = cas_time * ct_perk * xct
             await message.channel.send(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
-                                       f'魔法石 : {cas_stone_2}\n__**最終的なCT : {ct}**__')
+                                       f'魔法石 : {cas_stone_2}\n魔法石倍率 ： {xct}倍\n'
+                                       f'__**最終的なCT : {ct}**__')
 
         except:
             await message.channel.send(f':thinking: {message.author.mention}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
@@ -435,7 +442,7 @@ async def on_message(message: discord.Message):
             os_power = 1.0
 
             print(os_power)
-            skill_attack = await tokkoulist(message, dmg, os_power, tokkou)
+            skill_attack, skill_tokkou_add = await tokkoulist(message, dmg, os_power, tokkou)
 
             # ノービス
             embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -445,7 +452,7 @@ async def on_message(message: discord.Message):
             embed_1.set_author(name=message.author.name)
 
             embed_1.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_1.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * skill_os_power:.3f}__**\n'
@@ -484,7 +491,7 @@ async def on_message(message: discord.Message):
             embed_2.set_author(name=message.author.name)
 
             embed_2.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_2.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * 0.98 * (skill_os_power - 0.02):.3f}__**\n'
@@ -526,7 +533,7 @@ async def on_message(message: discord.Message):
             embed_3.set_author(name=message.author.name)
 
             embed_3.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_3.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.02):.3f}__**\n'
@@ -568,7 +575,7 @@ async def on_message(message: discord.Message):
             embed_4.set_author(name=message.author.name)
 
             embed_4.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_4.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power + 0.05):.3f}__**\n'
@@ -610,7 +617,7 @@ async def on_message(message: discord.Message):
             embed_5.set_author(name=message.author.name)
 
             embed_5.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_5.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.05):.3f}__**\n'
@@ -652,7 +659,7 @@ async def on_message(message: discord.Message):
             embed_6.set_author(name=message.author.name)
 
             embed_6.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}魔法石倍率：{skill_tokkou_add}倍')
 
             embed_6.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.05):.3f}__**\n'
@@ -693,7 +700,7 @@ async def on_message(message: discord.Message):
             embed_7.set_author(name=message.author.name)
 
             embed_7.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_7.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power + 0.10):.3f}__**\n'
@@ -736,7 +743,7 @@ async def on_message(message: discord.Message):
             embed_8.set_author(name=message.author.name)
 
             embed_8.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_8.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.04):.3f}__**\n'
@@ -778,7 +785,7 @@ async def on_message(message: discord.Message):
             embed_9.set_author(name=message.author.name)
 
             embed_9.add_field(name='条件',
-                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                              value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_9.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.02):.3f}__**\n'
@@ -818,7 +825,7 @@ async def on_message(message: discord.Message):
             embed_10.set_author(name=message.author.name)
 
             embed_10.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_10.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.10):.3f}__**\n'
@@ -860,7 +867,7 @@ async def on_message(message: discord.Message):
             embed_11.set_author(name=message.author.name)
 
             embed_11.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_11.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * skill_os_power:.3f}__**\n'
@@ -901,7 +908,7 @@ async def on_message(message: discord.Message):
             embed_12.set_author(name=message.author.name)
 
             embed_12.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_12.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.07):.3f}__**\n'
@@ -943,7 +950,7 @@ async def on_message(message: discord.Message):
             embed_13.set_author(name=message.author.name)
 
             embed_13.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_13.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power + 0.07):.3f}__**\n'
@@ -985,7 +992,7 @@ async def on_message(message: discord.Message):
             embed_14.set_author(name=message.author.name)
 
             embed_14.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_14.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power + 0.10) :.3f}__**\n'
@@ -1027,7 +1034,7 @@ async def on_message(message: discord.Message):
             embed_15.set_author(name=message.author.name)
 
             embed_15.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_15.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.07):.3f}__**\n'
@@ -1069,7 +1076,7 @@ async def on_message(message: discord.Message):
             embed_16.set_author(name=message.author.name)
 
             embed_16.add_field(name='条件',
-                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}')
+                               value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_16.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
                                value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.07):.3f}__**\n'
