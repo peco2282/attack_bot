@@ -396,14 +396,14 @@ async def on_message(message: discord.Message):
                 dmg = 1.0
                 os = int(str_os)
                 os_power = osdict[os]
-                attack = await tokkoulist(message, dmg, os_power, tokkou)
+                attack, xtokkou = await tokkoulist(message, dmg, os_power, tokkou)
                 ans_dmg = want_dmg / attack
                 await message.channel.send(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ceil(ans_dmg)}**__が必要です。")
 
             if str_os == '?':
                 dmg = float(msg[2])
                 os_power = 1.0
-                attack = await tokkoulist(message, dmg, os_power, tokkou)
+                attack, xtokkou = await tokkoulist(message, dmg, os_power, tokkou)
                 xos = want_dmg / attack
 
                 i = 0
