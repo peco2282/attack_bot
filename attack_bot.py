@@ -5,10 +5,13 @@ from math import ceil
 
 import nextcord as discord
 import pytz
+# from nextcord import MessageFlags
 from nextcord.ext import commands
 
 from definition import tokkoulist
 from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
+
+# pip install requests
 
 now = datetime.now(pytz.timezone('Asia/Tokyo'))
 
@@ -20,8 +23,7 @@ now = datetime.now(pytz.timezone('Asia/Tokyo'))
 # Jobについて変更
 
 # bot = discord.bot()
-bot = commands.Bot(command_prefix='.')
-bot.remove_command('help')
+bot = commands.Bot(command_prefix='.', help_command=None, )
 
 
 async def rand_ints_nodup(x, k):
@@ -48,15 +50,24 @@ async def on_ready():
         if (channel.id == channelid) or (channel.id == channelid_2):
             await channel.send(f"On Ready : {now}")
 
+    if len(bot.guilds) >= 10:
+        await bot.change_presence(activity=discord.Game(name='.help | ' + str(len(bot.guilds)) + 'guilds'))
+
+
+@bot.event
+async def on_guild_join(guild):
+    print("!!!!")
+    channelid = 886185192530780160
+    channelid_2 = 886495611728302091
+    for channel in bot.get_all_channels():
+        if (channel.id == channelid) or (channel.id == channelid_2):
+            await channel.send(guild)
+
+
+# -----
 
 @bot.command()
-async def a(ctx, arg):
-    print('a')
-    await ctx.send(arg)
-
-
-@bot.command()
-async def help(ctx):
+async def help(ctx: commands.context):
     embed = discord.Embed(title="コマンド一覧", color=discord.Colour.gold(), timestamp=now)
     embed.set_author(name=ctx.author.name)
     embed.add_field(name='ヘルプ', value='.help', inline=False)
@@ -68,21 +79,64 @@ async def help(ctx):
         name='キャスター', value='.cas [CT] [CTPerk] [魔法石(1 ~ 5)]', inline=False)
     embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
     embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
+    embed.add_field(name='招待リンク', value='.inv', inline=False)
 
     sent_message = await ctx.send(embed=embed)
     await sent_message.add_reaction('🚮')
 
 
-"""
-@bot.event
-async def on_resumed():
+@bot.command()
+async def inv(ctx: commands.context):
+    inv_link = discord.utils.oauth_url(client_id=886486207394099220)
+    await ctx.send(inv_link)
+
+
+@bot.command()
+async def member(ctx: commands.context):
+    # message インスタンスから guild インスタンスを取得
+    guild = ctx.guild
+
+    # ユーザとBOTを区別しない場合
+    member_count = guild.member_count
+    await ctx.send(f'メンバー数：{member_count}')
+
+
+@bot.command()
+async def guild(ctx: commands.context):
+    await ctx.send("I'm in " + str(len(bot.guilds)) + " servers!")
+
+
+@bot.command()
+async def glist(ctx: commands.context):
+    i = 1
+    embed = discord.Embed(title="Glist", color=discord.Colour.gold(), timestamp=now)
+    async for guild in bot.fetch_guilds():
+        embed.add_field(name=i, value=f'**`{guild.name}`**', inline=False)
+        i += 1
+
+    await ctx.send(embed=embed)
+
+
+@bot.command()
+async def rep(ctx, *, args):
     channelid = 886185192530780160
-    channelid_2 = 886495611728302091
+    channelid_2 = 912911804710150195
     for channel in bot.get_all_channels():
         if (channel.id == channelid) or (channel.id == channelid_2):
-            await channel.send("On Resumed")
-"""
+            await channel.send('  /report/  \n```\n' + str(args) + f'\n```\non :{now}')
 
+@bot.command()
+async def aaa(ctx):
+    k = 1
+    a = len(list(bot.get_all_channels()))
+    embed = discord.Embed(title="チャンネル一覧", color=discord.Colour.gold(), timestamp=now)
+    embed.add_field(name='チャンネル数', value=a, inline=False)
+    for i in bot.get_all_channels():
+        embed.add_field(name=k, value=f'**`{i}`**')
+        k += 1
+    await ctx.send(embed=embed)
+
+# -----
 
 @bot.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
@@ -327,6 +381,7 @@ async def on_message(message: discord.Message):
 
 
 
+
         except:
             await message.channel.send(f':thinking: {message.author.mention}\n'
                                        f'`.job [攻撃力] [OS] (魔法石)`の順に入力してください。')
@@ -396,14 +451,14 @@ async def on_message(message: discord.Message):
                 dmg = 1.0
                 os = int(str_os)
                 os_power = osdict[os]
-                attack, xtokkou = await tokkoulist(message, dmg, os_power, tokkou)
+                attack = await tokkoulist(message, dmg, os_power, tokkou)
                 ans_dmg = want_dmg / attack
                 await message.channel.send(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ceil(ans_dmg)}**__が必要です。")
 
             if str_os == '?':
                 dmg = float(msg[2])
                 os_power = 1.0
-                attack, xtokkou = await tokkoulist(message, dmg, os_power, tokkou)
+                attack = await tokkoulist(message, dmg, os_power, tokkou)
                 xos = want_dmg / attack
 
                 i = 0
@@ -413,6 +468,9 @@ async def on_message(message: discord.Message):
                         i = 'miss'
                         break
                     i += 1
+
+                if xos < osdict[0]:
+                    await message.channel.send('OSを積む必要はありません。')
 
                 if i == 'miss':
                     await message.channel.send(f"OSが{len(osdict)}以上必要、又は不可能な値です。")
@@ -483,6 +541,10 @@ async def on_message(message: discord.Message):
             embed_1.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * skill_os_power:.3f}**__')
 
+            embed_1.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * skill_os_power:.3f} / 通常mob {skill_attack * 0.7 * skill_os_power:.3f}__**',
+                              inline=False)
+
             # ソルジャー
             embed_2 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -524,6 +586,10 @@ async def on_message(message: discord.Message):
 
             embed_2.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.02):.3f}**__')
+
+            embed_2.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power + 0.05):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power + 0.05):.3f}__**',
+                              inline=False)
 
             # アーチャー
             embed_3 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -567,6 +633,10 @@ async def on_message(message: discord.Message):
             embed_3.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power + 0.05):.3f}**__')
 
+            embed_3.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.02):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.02):.3f}__**',
+                              inline=False)
+
             # マジシャン
             embed_4 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -608,6 +678,10 @@ async def on_message(message: discord.Message):
 
             embed_4.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.02):.3f}**__')
+
+            embed_4.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.02):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.02):.3f}__**',
+                              inline=False)
 
             # ウォーリア
             embed_5 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -651,6 +725,10 @@ async def on_message(message: discord.Message):
             embed_5.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.05):.3f}**__')
 
+            embed_5.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power + 0.10):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power + 0.10):.3f}__**',
+                              inline=False)
+
             # ボウマン
             embed_6 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -691,6 +769,10 @@ async def on_message(message: discord.Message):
 
             embed_6.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power + 0.10):.3f}**__')
+
+            embed_6.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.05):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.05):.3f}__**',
+                              inline=False)
 
             # メイジ
             embed_7 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -733,6 +815,10 @@ async def on_message(message: discord.Message):
 
             embed_7.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.05):.3f}**__')
+
+            embed_7.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.05):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.05):.3f}__**',
+                              inline=False)
             # --------------------------
 
             # ロウニン
@@ -777,6 +863,10 @@ async def on_message(message: discord.Message):
             embed_8.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.04):.3f}**__')
 
+            embed_8.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.04):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.04):.3f}__**',
+                              inline=False)
+
             # ドラゴンキラー
             embed_9 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                     url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -805,17 +895,22 @@ async def on_message(message: discord.Message):
                                     f'\n雪柱 (ノーマル)：**__{skill_attack * 4 * skill_os_power:.3f}__**', inline=False)
 
             embed_9.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
-                              value=f'オーバーシュート (スペシャル)：**__{skill_attack * 12.5 * skill_os_power:.3f}__, '
-                                    f'パッシブあり：__{skill_attack * 12.5 * 1.5 * skill_os_power:.3f}__**'
-                                    f'\nシャドウパワー (ノーマル)：**__{skill_attack * 1.5 * skill_os_power:.3f}__**'
-                                    f'\nエレメンタルパワー	(パッシブ)：**__{skill_attack * 1.5 * skill_os_power:.3f}__**',
+                              value=f'オーバーシュート (スペシャル)：**__{skill_attack * 12.5 * (skill_os_power + 0.05):.3f}__, '
+                                    f'パッシブあり：__{skill_attack * 12.5 * 1.5 * (skill_os_power + 0.05):.3f}__**'
+                                    f'\nシャドウパワー (ノーマル)：**__{skill_attack * 1.5 * (skill_os_power + 0.05):.3f}__**'
+                                    f'\nエレメンタルパワー	(パッシブ)：**__{skill_attack * 1.5 * (skill_os_power + 0.05):.3f}__**',
                               inline=False)
 
             embed_9.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
-                              value=f'血の斬撃 (スペシャル)：**__{skill_attack * 2.5 * skill_os_power:.3f}__**', inline=False)
+                              value=f'血の斬撃 (スペシャル)：**__{skill_attack * 2.5 * (skill_os_power - 0.02):.3f}__**',
+                              inline=False)
 
             embed_9.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
-                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * skill_os_power:.3f}**__')
+                              value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power + 0.05):.3f}**__')
+
+            embed_9.add_field(name='**聖剣 (In 浮世の砂海)**',
+                              value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.02):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.02):.3f}__**',
+                              inline=False)
 
             # プリースト
             embed_10 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -859,6 +954,10 @@ async def on_message(message: discord.Message):
             embed_10.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                                value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.10):.3f}**__')
 
+            embed_10.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.10):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.10):.3f}__**',
+                               inline=False)
+
             # スカ―ミッシャー
             embed_11 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                      url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -894,11 +993,15 @@ async def on_message(message: discord.Message):
                                inline=False)
 
             embed_11.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
-                               value=f'血の斬撃 (スペシャル)：**__{skill_attack * 2.5 * (skill_os_power - 0.05):.3f}__**',
+                               value=f'血の斬撃 (スペシャル)：**__{skill_attack * 2.5 * (skill_os_power + 0.05):.3f}__**',
                                inline=False)
 
             embed_11.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                                value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * skill_os_power:.3f}**__')
+
+            embed_11.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power + 0.05):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power + 0.05):.3f}__**',
+                               inline=False)
 
             # ハグレモノ
             embed_12 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -942,6 +1045,10 @@ async def on_message(message: discord.Message):
             embed_12.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                                value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.07):.3f}**__')
 
+            embed_12.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.07):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.07):.3f}__**',
+                               inline=False)
+
             # ルーンキャスター
             embed_13 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                      url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -983,6 +1090,10 @@ async def on_message(message: discord.Message):
 
             embed_13.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                                value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.07):.3f}**__')
+
+            embed_13.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.07):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.07):.3f}__**',
+                               inline=False)
 
             # スペランカー
             embed_14 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -1026,6 +1137,10 @@ async def on_message(message: discord.Message):
             embed_14.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                                value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power + 0.10):.3f}**__')
 
+            embed_14.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power + 0.10):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power + 0.10):.3f}__**',
+                               inline=False)
+
             # アーサー
             embed_15 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                                      url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
@@ -1037,36 +1152,40 @@ async def on_message(message: discord.Message):
                                value=f'素火力： {skill_dmg}\nOS： {skill_os}\nOS倍率： {skill_os_power}\n魔法石： {skill_tokkou}\n魔法石倍率：{skill_tokkou_add}倍')
 
             embed_15.add_field(name='**ルーンオブアルカディア (In Lux et Tenebrae) ,~Rune of Arcadia~ (In 追憶と創成の間)**',
-                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * (skill_os_power - 0.07):.3f}__**\n'
-                                     f'マジックボール (ノーマル)**：__{skill_attack * 4 * (skill_os_power - 0.07):.3f}__**, '
-                                     f'**(詠唱時：__{skill_attack * 8 * (skill_os_power - 0.07):.3f}__**)'
-                                     f'\nライトニングボルト (ノーマル)：**__{skill_attack * 3 * (skill_os_power - 0.07):.3f}__**\n'
+                               value=f'メテオストライク (スペシャル)：**__{skill_attack * 9 * skill_os_power :.3f}__**\n'
+                                     f'マジックボール (ノーマル)**：__{skill_attack * 4 * skill_os_power :.3f}__**, '
+                                     f'**(詠唱時：__{skill_attack * 8 * skill_os_power :.3f}__**)'
+                                     f'\nライトニングボルト (ノーマル)：**__{skill_attack * 3 * skill_os_power :.3f}__**\n'
                                      f'**(ファイヤ・ボルケーノ はルーンキャスターのみ使用可能。)**',
                                inline=False)
 
             embed_15.add_field(name=f'**Angel_auf_Erden (In エイドリアン城)**',
-                               value=f'ショックストーン (スペシャル)：**__{skill_attack * 7 * (skill_os_power + 0.07):.3f}__**'
-                                     f'\nトゥルーロック (ノーマル)：**__{skill_attack * 4 * (skill_os_power + 0.07):.3f}__**',
+                               value=f'ショックストーン (スペシャル)：**__{skill_attack * 7 * (skill_os_power + 0.05):.3f}__**'
+                                     f'\nトゥルーロック (ノーマル)：**__{skill_attack * 4 * (skill_os_power + 0.05):.3f}__**',
                                inline=False)
 
             embed_15.add_field(name=f'**-神弓- ブリザードテンスト** (In Vaaasa)',
-                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{skill_attack * 7 * (skill_os_power - 0.07):.3f}__**'
-                                     f'\n雪柱 (ノーマル)：**__{skill_attack * 4 * (skill_os_power - 0.07):.3f}__**',
+                               value=f'カオスブリザード (7発命中時、総和) (スペシャル)：**__{skill_attack * 7 * skill_os_power :.3f}__**'
+                                     f'\n雪柱 (ノーマル)：**__{skill_attack * 4 * skill_os_power :.3f}__**',
                                inline=False)
 
             embed_15.add_field(name=f'**~繊翳~ (In Xen\'s Castle)**',
-                               value=f'オーバーシュート (スペシャル)：**__{skill_attack * 12.5 * (skill_os_power - 0.07):.3f}__, '
-                                     f'パッシブあり：__{skill_attack * 12.5 * 1.5 * (skill_os_power - 0.07):.3f}__**'
-                                     f'\nシャドウパワー (ノーマル)：**__{skill_attack * 1.5 * (skill_os_power - 0.07):.3f}__**'
-                                     f'\nエレメンタルパワー	(パッシブ)：**__{skill_attack * 1.5 * (skill_os_power - 0.07):.3f}__**',
+                               value=f'オーバーシュート (スペシャル)：**__{skill_attack * 12.5 * skill_os_power :.3f}__, '
+                                     f'パッシブあり：__{skill_attack * 12.5 * 1.5 * skill_os_power :.3f}__**'
+                                     f'\nシャドウパワー (ノーマル)：**__{skill_attack * 1.5 * skill_os_power :.3f}__**'
+                                     f'\nエレメンタルパワー	(パッシブ)：**__{skill_attack * 1.5 * skill_os_power :.3f}__**',
                                inline=False)
 
             embed_15.add_field(name=f'**Satans Bote (ストーリー報酬) (In エイドリアン城)**',
-                               value=f'血の斬撃 (スペシャル)：**__{skill_attack * 2.5 * (skill_os_power + 0.07):.3f}__**',
+                               value=f'血の斬撃 (スペシャル)：**__{skill_attack * 2.5 * (skill_os_power + 0.05):.3f}__**',
                                inline=False)
 
             embed_15.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
-                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.07):.3f}**__')
+                               value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * skill_os_power :.3f}**__')
+
+            embed_15.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power + 0.05):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power + 0.05):.3f}__**',
+                               inline=False)
 
             # シーカー
             embed_16 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
@@ -1109,6 +1228,10 @@ async def on_message(message: discord.Message):
 
             embed_16.add_field(name=f'**Dorachenbogen・HässlichesBogen (In ドラゴンの谷)**',
                                value=f'-黒竜- ヘイロン -滅-	(スペシャル)：__**{skill_attack * 8 * (skill_os_power - 0.07):.3f}**__')
+
+            embed_16.add_field(name='**聖剣 (In 浮世の砂海)**',
+                               value=f'下克上 (パッシブ)：**__ボスmob {skill_attack * 1.2 * (skill_os_power - 0.07):.3f} / 通常mob {skill_attack * 0.7 * (skill_os_power - 0.07):.3f}__**',
+                               inline=False)
 
             if msg[0] == '.skill':
                 embed = discord.Embed(title='`.skill` 使い方', timestamp=now)
@@ -1158,7 +1281,7 @@ async def on_message(message: discord.Message):
                 while True:
                     try:
                         # リアクションが付けられるまで待機
-                        reaction, user = await bot.wait_for('reaction_add', timeout=20.0, check=check)
+                        reaction, user = await bot.wait_for('reaction_add', timeout=40.0, check=check)
 
                     except asyncio.TimeoutError:
                         # 一定時間経ったら消す
@@ -1211,7 +1334,7 @@ async def on_message(message: discord.Message):
                 while True:
                     try:
                         # リアクションが付けられるまで待機
-                        reaction, user = await bot.wait_for('reaction_add', timeout=20.0, check=check)
+                        reaction, user = await bot.wait_for('reaction_add', timeout=40.0, check=check)
 
                     except asyncio.TimeoutError:
                         # 一定時間経ったら消す
