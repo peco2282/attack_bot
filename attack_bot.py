@@ -87,7 +87,7 @@ async def help(ctx: commands.context):
 
 @bot.command()
 async def inv(ctx: commands.context):
-    inv_link = discord.utils.oauth_url(client_id=886486207394099220)
+    inv_link = discord.utils.oauth_url(client_id=884986866221326347)
     await ctx.send(inv_link)
 
 
