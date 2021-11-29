@@ -23,7 +23,8 @@ now = datetime.now(pytz.timezone('Asia/Tokyo'))
 # Jobについて変更
 
 # bot = discord.bot()
-bot = commands.Bot(command_prefix='.', help_command=None, )
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='.', help_command=None, intents=intents)
 
 
 async def rand_ints_nodup(x, k):
