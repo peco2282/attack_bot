@@ -397,8 +397,6 @@ async def on_message(message: discord.Message):
 
             ct_perk = castimedict[cas_perk]
 
-            if cas_stone_2 != cas_stone_1:
-                await message.channel.send(f"{message.author.mention}, 重複しています。")
 
             if 'leg' in cas_stone_1:
                 await message.channel.send(f'{message.author}、キャスター石に\'leg\'はありません。')
@@ -407,37 +405,36 @@ async def on_message(message: discord.Message):
                 cas_stone_2.remove("4.5")
                 cas_stone_2.append("4_5")
 
-            if (len(cas_stone_1) != len(cas_stone_2)) or (len(cas_stone_2) > 5):
-                await message.channel.send(f':thinking: {message.author.mention}, キャスター石が重複しています。')
 
-            elif ('4_5' in cas_stone_2) and ('4.5' in cas_stone_2):
+            if ('4_5' in cas_stone_1) and ('4.5' in cas_stone_1):
                 await message.channel.send(f":thinking: {message.author.mention}, 魔法石`4_5 と 4.5` は同じです。")
 
-            elif '1' in cas_stone_2:
+            if '1' in cas_stone_1:
                 xct *= 0.95
 
-            elif '2' in cas_stone_2:
+            if '2' in cas_stone_1:
                 xct *= 0.90
 
-            elif '3' in cas_stone_2:
+            if '3' in cas_stone_1:
                 xct *= 0.84
 
-            elif '4' in cas_stone_2:
+            if '4' in cas_stone_1:
                 xct *= 0.77
 
-            elif '4_5' in cas_stone_2:
+            if '4_5' in cas_stone_1:
                 xct *= 0.72
 
-            elif '5' in cas_stone_2:
+            if '5' in cas_stone_1:
                 xct *= 0.60
 
             ct = cas_time * ct_perk * xct
             await message.channel.send(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
-                                       f'魔法石 : {cas_stone_2}\n魔法石倍率 ： {xct}倍\n'
+                                       f'魔法石 : {cas_stone_1}\n魔法石倍率 ： {xct}倍\n'
                                        f'__**最終的なCT : {ct}**__')
 
         except:
             await message.channel.send(f':thinking: {message.author.mention}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
+
 
     if message.content.startswith('.ask'):
         msg = message.content.split()
