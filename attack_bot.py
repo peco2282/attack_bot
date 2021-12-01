@@ -5,13 +5,14 @@ from math import ceil
 
 import nextcord as discord
 import pytz
-# from nextcord import MessageFlags
+
 from nextcord.ext import commands
 
 from definition import tokkoulist
 from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
 
 intents = discord.Intents.all()
+now = datetime.now(pytz.timezone('Asia/Tokyo'))
 
 bot = commands.Bot(command_prefix='.', help_command=None, intents=intents)
 
