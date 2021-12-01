@@ -1,6 +1,7 @@
 import random
 
 async def tokkoulist(message, dmg, os_power, tokkou):
+    tokkou = list(tokkou)
     if len(tokkou) == 0:
         dmg_all = dmg * os_power
         return dmg_all
