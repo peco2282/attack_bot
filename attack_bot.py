@@ -225,6 +225,73 @@ async def dmg(ctx: commands.Context, *args):
         await ctx.send(f':thinking: {ctx.author.mention}\n'
                        f'`.dmg [攻撃力] [OS] (魔法石)`の順に入力してください。')
 
+        
+@bot.command(aliases=['ms'])
+async def magicstone(ctx: commands.Context, *args):
+    try:
+        args = list(args)
+        wantdmg = float(args[0])
+        nowdmg = float(args[1])
+        os = int(args[2])
+        magicstoneslot = int(args[3])
+        osadd = osdict[os]
+
+        s = wantdmg / (nowdmg * osadd)
+        ms = list()
+        x = 0
+        i = 1
+        if magicstoneslot == 1:
+            if s > 1.55:
+                await ctx.send('Index out of range!\nスロットが足りません。')
+                return
+            for i in dict_1:
+                if dict_1[i] > s:
+                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：1\n\n**結果：{y}**')
+
+
+
+        elif magicstoneslot == 2:
+            if s > (1.35 * 1.55):
+                await ctx.send('Index out of range!!\nスロットが足りません。')
+                return
+            for y in dict_2:
+                n = dict_2[y]
+                if n > s:
+                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：2\n\n**結果：{y}**')
+                    return
+
+        elif magicstoneslot == 3:
+            if s > (1.23 * 1.35 * 1.55):
+                await ctx.send('Index out of range!!!\nスロットが足りません。')
+                return
+            for y in dict_3:
+                n = dict_3[y]
+                if n > s:
+                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：3\n\n**結果：{y}**')
+                    return
+
+        elif magicstoneslot == 4:
+            if s > (1.55 * 1.23 * 1.35 * 1.55):
+                await ctx.send('Index out of range!!!!\nスロットが足りません。')
+                return
+            for y in dict_4:
+                n = dict_4[y]
+                if n > s:
+                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：4\n\n**結果：{y}**')
+                    return
+
+        elif magicstoneslot == 5:
+            if s > (1.10 * 1.15 * 1.23 * 1.35 * 1.55):
+                await ctx.send('Index out of range!!!!!\nスロットが足りません。')
+                return
+            for y in dict_5:
+                n = dict_5[y]
+                if n > s:
+                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：5\n\n**結果：{y}**')
+                    return
+    except:
+        await ctx.send('`.magicstone (又は\'ms\') 欲しいダメージ 素火力 OS スロット数`')
+
 
 # 職業
 @bot.command()
