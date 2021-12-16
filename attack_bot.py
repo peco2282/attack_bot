@@ -105,6 +105,7 @@ async def help(ctx: commands.context):
         name='キャスター', value='.cas [CT] [CTPerk] [魔法石(1 ~ 5)]', inline=False)
     embed.add_field(name='最低OSを求める場合', value='.ask [欲しい火力] [今の素ダメ] ? [魔法石]', inline=False)
     embed.add_field(name='最低火力を求める場合', value='.ask [欲しい火力] ? [OS] [魔法石]', inline=False)
+    embed.add_field(name='おすすめ魔法石', value='.magicstone (又は\'ms\') [欲しいダメージ] [素火力] [OS] [スロット数]', inline=False)
     embed.add_field(name='招待リンク', value='.inv', inline=False)
 
     sent_message = await ctx.send(embed=embed)
@@ -246,7 +247,7 @@ async def magicstone(ctx: commands.Context, *args):
                 return
             for i in dict_1:
                 if dict_1[i] > s:
-                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：1\n\n**結果：{y}**')
+                    await ctx.send(f'条件：\n魔法石付けた後の欲しいダメージ：{wantdmg}\n今の素火力：{nowdmg}\nOS：{os}\n魔法石スロット：1\n\n**結果：{i}**')
 
 
 
