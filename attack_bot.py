@@ -9,7 +9,7 @@ import pytz
 from nextcord.ext import commands
 
 from definition import tokkoulist
-from dictionaries import osdict, castimedict, dangeondict, highlv_dangeondict
+from dictionaries import osdict, castimedict, dict_1, dict_2, dict_3, dict_4, dict_5
 
 intents = discord.Intents.all()
 now = datetime.now(pytz.timezone('Asia/Tokyo'))
