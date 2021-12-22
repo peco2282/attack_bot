@@ -549,33 +549,39 @@ async def cas(ctx, *args):
 
         ct_perk = castimedict[cas_perk]
 
-        if 'leg' in cas_stone_1:
+        if 'leg' in cas_stone_2:
             await ctx.send(f'{ctx.author}、キャスター石に\'leg\'はありません。')
 
         if '4.5' in cas_stone_2:
             cas_stone_2.remove("4.5")
             cas_stone_2.append("4_5")
 
-        if ('4_5' in cas_stone_1) and ('4.5' in cas_stone_1):
+        if ('4_5' in cas_stone_2) and ('4.5' in cas_stone_2):
             await ctx.send(f":thinking: {ctx.author.mention}, 魔法石`4_5 と 4.5` は同じです。")
 
-        if '1' in cas_stone_1:
+        if '1' in cas_stone_2:
             xct *= 0.95
+            cas_stone_2.remove('1')
 
-        if '2' in cas_stone_1:
+        if '2' in cas_stone_2:
             xct *= 0.90
+            cas_stone_2.remove('2')
 
-        if '3' in cas_stone_1:
+        if '3' in cas_stone_2:
             xct *= 0.84
+            cas_stone_2.remove('3')
 
-        if '4' in cas_stone_1:
+        if '4' in cas_stone_2:
             xct *= 0.77
+            cas_stone_2.remove('4')
 
-        if '4_5' in cas_stone_1:
+        if '4_5' in cas_stone_2:
             xct *= 0.72
+            cas_stone_2.remove('4_5')
 
-        if '5' in cas_stone_1:
+        if '5' in cas_stone_2:
             xct *= 0.60
+            cas_stone_2.remove('5')
 
         ct = cas_time * ct_perk * xct
         sent_message = await ctx.send(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
