@@ -1,1 +1,1 @@
-discordbot: python attack_bot.py
+discordbot: python py-cord-commands.py
