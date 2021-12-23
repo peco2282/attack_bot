@@ -1558,8 +1558,8 @@ async def ask(ctx: commands.Context, *args):
                        f"と入力してください。")
 
 
-@bot.command(aliases=["ct"])
-async def cas(ctx: commands.Context, *args):
+@bot.command(aliases=["cas"])
+async def ct(ctx: commands.Context, *args):
     xct = 1.0
     try:
         cas_time = float(args[0])
