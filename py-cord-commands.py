@@ -39,6 +39,7 @@ async def magicstone(ctx: discord.ApplicationContext):
 async def on_ready():
     print(bot.user.id)
     print(bot.user.name)
+    print('Ver.:' + discord.__version__)
 
 
 @bot.command()
