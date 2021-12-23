@@ -94,7 +94,7 @@ async def invite(ctx: commands.Context):
 
 
 # 完了
-@bot.slash_command(name='dmg', guild_ids=[885757485871398985])
+@bot.slash_command(name='dmg', guild_ids=[885757485871398985, 889120444068790292])
 async def damage(
         ctx: discord.ApplicationContext,
         raw: Option(float, description='素ダメ'),
@@ -128,7 +128,7 @@ async def damage(
 
 
 # 完了
-@bot.slash_command(name='ask', guild_ids=[885757485871398985])
+@bot.slash_command(name='ask', guild_ids=[885757485871398985, 889120444068790292])
 async def askdamage(
         ctx: discord.ApplicationContext,
         need: Option(float, description='欲しい火力'),
@@ -188,7 +188,7 @@ async def askdamage(
 
 
 # 完了
-@bot.slash_command(name='ct', guild_ids=[885757485871398985])
+@bot.slash_command(name='ct', guild_ids=[885757485871398985, 889120444068790292])
 async def cooltime(
         ctx: discord.ApplicationContext,
         ct: Option(float, description='All Cool Time'),
@@ -224,7 +224,7 @@ async def cooltime(
 
 
 # 完了
-@bot.slash_command(name='job', guild_ids=[885757485871398985])
+@bot.slash_command(name='job', guild_ids=[885757485871398985, 889120444068790292])
 async def job_damage(
         ctx: discord.ApplicationContext,
         raw: Option(float, description='素ダメ'),
@@ -402,7 +402,7 @@ async def job_damage(
             await sent_msg.remove_reaction(emoji=reaction.emoji, member=ctx.author)
 
 
-@bot.slash_command(name='skill', guild_ids=[885757485871398985])
+@bot.slash_command(name='skill', guild_ids=[885757485871398985, 889120444068790292])
 async def skilldamage(
         ctx: discord.ApplicationContext,
         raw: Option(float, description='素ダメ'),
