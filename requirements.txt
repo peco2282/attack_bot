@@ -1,5 +1,6 @@
 #git+https://github.com/Rapptz/discord.py
 git+https://github.com/nextcord/nextcord
+https://github.com/Pycord-Development/pycord
 python-dotenv
 asyncio
 pytz
