@@ -98,6 +98,23 @@ async def help(ctx: commands.Context):
             await sent_message.clear_reactions()
             break
 
+            
+@bot.command()
+async def msg(ctx: commands.context, *args):
+    try:
+        r = ''
+        ids = int(args[0])
+        channelid = ids
+        for channel in bot.get_all_channels():
+            if channel.id == channelid:
+                a = list(args[1:])
+                for x in a:
+                    r += f'{x}　'
+                await ctx.send(r)
+    except:
+        print('q')
+            
+
 
 @bot.command(aliases=['inv'])
 async def invite(ctx: commands.Context):
