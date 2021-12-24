@@ -58,6 +58,18 @@ async def guildlist(ctx: commands.context):
 
     await ctx.send(embed=embed)
 
+@bot.command(aliases=['q'])
+async def channel(ctx: commands.Context):
+    print("5")
+    k = ''
+    k += f'{len(list(bot.get_all_channels()))}\n'
+    print("2")
+    for i in bot.get_all_channels():
+        k += f'{i} : {i.id}\n'
+        print("4")
+
+    await ctx.send(k)
+
 
 @bot.command(aliases=['?', 'h'])
 async def help(ctx: commands.Context):
