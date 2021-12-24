@@ -111,6 +111,7 @@ async def msg(ctx: commands.context, *args):
                 for x in a:
                     r += f'{x} '
                 await ctx.send(f'At : {channel.id}\nSended at {now}\n\n{r}')
+                await channel.send(r)
                 
     except:
         print('q')
