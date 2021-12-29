@@ -471,8 +471,9 @@ async def skilldamage(
         f'\U0001f1f0 : スカ―ミッシャー , \U0001f1f1 : ハグレモノ , 　　\U0001f1f2 : ルーンキャスター\n'
         f'\U0001f1f3 : スペランカー , 　　\U0001f1f4 : アーサー , 　　　\U0001f1f5 : シーカー', ephemeral=True)
 
-    dmg, alpha = await tokkou(ctx, raw, osraw, x)
-
+    # dmg, alpha = await tokkou(ctx, raw, osraw, x)
+    osrawpower = 1.0
+    dmg, alpha = await tokkou(ctx, raw=raw, osraw=osrawpower, x=x)
     # ノービス
     embed_1 = discord.Embed(title=f"skill一覧", color=discord.Color.dark_green(), timestamp=now,
                             url="https://wikiwiki.jp/thelow/%E3%82%B9%E3%82%AD%E3%83%AB",
