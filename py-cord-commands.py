@@ -153,7 +153,8 @@ async def help(ctx: discord.ApplicationContext):
     sent_message = await ctx.respond(embed=embed, ephemeral=True)
 
 
-@bot.slash_command(guild_ids=[869729203778646046])
+# @bot.slash_command(guild_ids=[869729203778646046])
+@bot.slash_command(guild_ids=[885757485871398985, 889120444068790292, 920561679266373642])
 async def invite(ctx: discord.ApplicationContext):
     link = discord.utils.oauth_url(client_id=bot.user.id) + '&permissions=8'
 
