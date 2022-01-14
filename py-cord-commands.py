@@ -271,7 +271,8 @@ async def askdamage(
 
 
 # 完了
-@bot.slash_command(name='ct', guild_ids=[869729203778646046])
+# @bot.slash_command(name='ct', guild_ids=[869729203778646046])
+@bot.slash_command(name='ct', guild_ids=[885757485871398985, 889120444068790292, 920561679266373642])
 async def cooltime(
         ctx: discord.ApplicationContext,
         ct: Option(float, description='All Cool Time'),
