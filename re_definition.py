@@ -108,13 +108,6 @@ async def tokkoulist(ctx, dmg, os_power, tokkou):
         return dmg_all, tokkou_add
 
     elif 1 <= len(tokkou) <= 5:
-        if '4.5' in tokkou:
-            tokkou.remove('4.5')
-            tokkou.append('4_5')
-            print(tokkou)
-
-
-
         if len(tokkou) != len(tokkou_list):
             print("$")
             await ctx.send(f"{ctx.author.mention}, 重複しています。")
@@ -153,10 +146,10 @@ async def tokkoulist(ctx, dmg, os_power, tokkou):
                 tokkou_add *= 1.55
                 tokkou.remove("5")
 
-            if str('leg') in tokkou:
+            if str('legend') in tokkou:
                 alpha = (dmg * 0.06)
                 tokkou_add *= 1.55
-                tokkou.remove("leg")
+                tokkou.remove("legend")
 
                 #####
             alldmg = dmg * os_power * tokkou_add + alpha
