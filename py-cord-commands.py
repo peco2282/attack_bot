@@ -212,63 +212,91 @@ async def askdamage(
 ):
     if (os is None) and (raw is None):
         await ctx.respond(f'どちらか1方は埋めてください', ephemeral=True)
+        return
 
-    elif (raw is not None) and (os is not None):
+    if (raw is not None) and (os is not None):
         await ctx.respond('どちらか1方のみ埋めてください', ephemeral=True)
-
+        return
+    print("!!")
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    else:
-        x = list()
-        r = list()
-        x = [slot1, slot2, slot3, slot4, slot5]
-        if os is not None:
-            if os >= len(osdict):
-                await ctx.respond(f'OSは{len(osdict)}までしか登録されていません。')
+    x = list()
+    r = list()
+    x = [slot1, slot2, slot3, slot4, slot5]
+    if os:
+        if os >= len(osdict):
+            await ctx.respond(f'OSは{len(osdict)}までしか登録されていません。')
 
-            else:
-                for i in x:
-                    if i in r:
-                        if i is None:
-                            pass
-                        else:
-                            await ctx.respond("error\n\n数値が重複しています。重複したものは1つとしてカウントします。", ephemeral=True)
-                            pass
-
+        else:
+            print("?")
+            for i in x:
+                if i in r:
                     if i is None:
                         pass
                     else:
-                        r.append(i)
+                        await ctx.respond("error\n\n数値が重複しています。重複したものは1つとしてカウントします。", ephemeral=True)
+                        pass
 
-                if (raw is None) and (os is None):
-                    await ctx.respond('どちらか1方は埋めてください')
+                if i is None:
+                    pass
+                else:
+                    r.append(i)
 
-                if (raw is not None) and (os is not None):
-                    await ctx.respond('どちらか1方は埋めてください')
+            osraw = osdict[os]
+            n = 1.0
+            dmg, alpha = await tokkou(ctx, n, osraw, x)
+            times = need / dmg
+            # 1000/ None/ 16 => 2.33856, 62.5
+            await ctx.respond(
+                f'欲しい火力: {need}\nOS値: {os}\nOS倍率: {osraw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**__必要な攻撃力: {times:.3f}__**')
 
-                if raw is None:
-                    osraw = osdict[os]
-                    n = 1.0
-                    dmg, alpha = await tokkou(ctx, n, osraw, x)
-                    times = need / dmg
-                    # 1000/ None/ 16 => 2.33856, 62.5
-                    await ctx.respond(
-                        f'欲しい火力: {need}\nOS値: {os}\nOS倍率: {osraw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**__必要な攻撃力: {times:.3f}__**')
+            if os is None:
+                osraw = osdict[0]
+                dmg, alpha = await tokkou(ctx, raw, osraw, x)
+                times = need / dmg
 
-                if os is None:
-                    osraw = osdict[0]
-                    dmg, alpha = await tokkou(ctx, raw, osraw, x)
-                    times = need / dmg
+                for i in range(len(osdict)):
+                    if osdict[i] > times:
+                        await ctx.respond(
+                            f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**__必要なOS: {i}__**  (OS倍率: {osdict[i]})')
+                        break
 
-                    for i in range(len(osdict)):
-                        if osdict[i] > times:
-                            await ctx.respond(
-                                f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**__必要なOS: {i}__**  (OS倍率: {osdict[i]})')
-                            break
+                    if times >= osdict[74]:
+                        await ctx.respond(
+                            f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**この攻撃力では求める火力を出すことは不可能です。**')
+                        break
+    if raw:
+        for i in x:
+            if i in r:
+                if i is None:
+                    pass
+                else:
+                    await ctx.respond("error\n\n数値が重複しています。重複したものは1つとしてカウントします。", ephemeral=True)
+                    pass
 
-                        if times >= osdict[74]:
-                            await ctx.respond(
-                                f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**この攻撃力では求める火力を出すことは不可能です。**')
-                            break
+            if i is None:
+                pass
+            else:
+                r.append(i)
+
+        osraw = osdict[0]
+        dmg, alpha = await tokkou(ctx, raw, osraw, x)
+
+        times = need / dmg
+
+        for i in range(len(osdict)):
+            if osdict[0] >= times:
+                await ctx.respond(
+                    f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**__OSを積む必要はありません。__**'
+                )
+            if osdict[i] > times:
+                await ctx.respond(
+                    f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**__必要なOS: {i}__**  (OS倍率: {osdict[i]})')
+                break
+
+            if times >= osdict[74]:
+                await ctx.respond(
+                    f'欲しい火力: {need}\n攻撃力: {raw}\n魔法石: {r}\n魔法石倍率: {alpha}\n\n**この攻撃力では求める火力を出すことは不可能です。**')
+                break
 
 
 # 完了
