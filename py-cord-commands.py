@@ -1058,7 +1058,7 @@ async def cas(ctx: commands.Context, *args):
         ct = cas_time * ct_perk * xct
         sent_message = await ctx.send(f'元のCT : {cas_time}\nCTPrk : {cas_perk}\n'
                                       f'魔法石 : {cas_stone_1}\n魔法石倍率 ： {xct}倍\n'
-                                      f'__**最終的なCT : {ct}**__')
+                                      f'__**最終的なCT : {ct:.1f}**__')
 
         await sent_message.add_reaction('🚮')
 
