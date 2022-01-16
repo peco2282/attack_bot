@@ -760,6 +760,9 @@ async def dmg(ctx: commands.Context, *args):
             except asyncio.TimeoutError:
                 await sent_message.clear_reactions()
                 break
+               
+            await sent_message.delete(delay=2)
+            return 
 
     except:
         await ctx.send(f':thinking: {ctx.author.name}\n'
@@ -1008,8 +1011,10 @@ async def ask(ctx: commands.Context, *args):
                 except asyncio.TimeoutError:
                     await sent_message.clear_reactions()
                     break
-            return sent_message
-
+            
+            await sent_message.delete(delay=2)
+            return             
+            
     except:
         await ctx.send(f":thinking: {ctx.author.name}, `.ask [欲しい火力] [今の素ダメ] '?' (魔法石)`\n"
                        f"又は　`.ask [欲しい火力] '?' [今のOS] (魔法石)`\n"
@@ -1069,6 +1074,9 @@ async def cas(ctx: commands.Context, *args):
             except asyncio.TimeoutError:
                 await sent_message.clear_reactions()
                 break
+        
+        await sent_message.delete(delay=2)
+        return 
 
     except:
         await ctx.send(f':thinking: {ctx.author.name}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
