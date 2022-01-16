@@ -1022,7 +1022,7 @@ async def cas(ctx: commands.Context, *args):
     try:
         cas_time = float(args[0])
         cas_perk = int(args[1])
-        cas_stone_1 = str(args[2:])
+        cas_stone_1 = list(args[2:])
         cas_stone_2 = list(set(cas_stone_1))
 
         ct_perk = castimedict[cas_perk]
