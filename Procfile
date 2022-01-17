@@ -1,1 +1,1 @@
-discordbot: python py-cord-commands.py
+discordbot: python Damage_Calculator.py
