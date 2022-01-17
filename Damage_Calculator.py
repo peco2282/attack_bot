@@ -128,7 +128,7 @@ async def help(ctx: commands.Context):
 
 @bot.command(aliases=['inv'])
 async def invite(ctx: commands.Context):
-    inv_link = discord.utils.oauth_url(client_id=884986866221326347) + '&permissions=8'
+    inv_link = discord.utils.oauth_url(client_id=bot.user.id) + '&permissions=8'
     await ctx.send(f'招待リンク：{inv_link}\n\nスラッシュコマンド登録はdmください。')
     await ctx.message.delete()
 
