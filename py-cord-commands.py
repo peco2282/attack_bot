@@ -41,6 +41,7 @@ async def on_ready():
     print(bot.user.id)
     print(bot.user.name)
     print('Ver.:' + discord.__version__)
+    print('Bot is ready!')
 
 
 @bot.command()
