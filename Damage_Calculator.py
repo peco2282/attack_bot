@@ -134,7 +134,7 @@ async def invite(ctx: commands.Context):
 
 
 # @bot.slash_command(guild_ids=[869729203778646046])
-@bot.slash_command(guild_ids=[885757485871398985, 889120444068790292, 920561679266373642])
+@bot.slash_command(guild_ids=[885757485871398985, 889120444068790292, 920561679266373642], description='help')
 async def help(ctx: discord.ApplicationContext):
     embed = discord.Embed(title="コマンド一覧", description="`[]` は必須項目, `()` は無くても可", color=discord.Colour.gold(),
                           timestamp=now)
