@@ -115,7 +115,7 @@ async def help(ctx: commands.Context):
     embed.add_field(name='招待リンク', value='.inv', inline=False)
 
     sent_message = await ctx.send(embed=embed)
-    await sent_message.add_reaction('🚮')
+    #await sent_message.add_reaction('🚮')
 
     while True:
         try:
@@ -752,7 +752,7 @@ async def dmg(ctx: commands.Context, *args):
         sent_message = await ctx.send(f"**By：{ctx.author.name}**\n\n素火力 : {dmg}\nOS : {os}\n"
                                       f"OS倍率 : {os_power} 倍\n魔法石：{tokkou_dmg}\n魔法石倍率：{tokkou_add}倍\n"
                                       f"__**攻撃力 : {attack:.3f}\n**__")
-        await sent_message.add_reaction('🚮')
+        #await sent_message.add_reaction('🚮')
 
         while True:
             try:
@@ -965,7 +965,7 @@ async def ask(ctx: commands.Context, *args):
             attack, tokkou_add = await tokkoulist(ctx, dmg, os_power, tokkou)
             ans_dmg = want_dmg / attack
             sent_message = await ctx.send(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ans_dmg:.3f}**__が必要です。")
-            await sent_message.add_reaction('🚮')
+            #await sent_message.add_reaction('🚮')
 
             while True:
                 try:
@@ -1003,7 +1003,7 @@ async def ask(ctx: commands.Context, *args):
                 else:
                     sent_message = await ctx.send(f"{dmg}で{want_dmg}を出すには\n__**OSは{i}以上**__とってください。")
 
-            await sent_message.add_reaction('🚮')
+            #await sent_message.add_reaction('🚮')
 
             while True:
                 try:
@@ -1066,7 +1066,7 @@ async def cas(ctx: commands.Context, *args):
                                       f'魔法石 : {cas_stone_1}\n魔法石倍率 ： {xct}倍\n'
                                       f'__**最終的なCT : {ct:.1f}**__')
 
-        await sent_message.add_reaction('🚮')
+        #await sent_message.add_reaction('🚮')
 
         while True:
             try:
