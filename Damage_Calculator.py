@@ -752,18 +752,6 @@ async def dmg(ctx: commands.Context, *args):
         sent_message = await ctx.send(f"**By：{ctx.author.name}**\n\n素火力 : {dmg}\nOS : {os}\n"
                                       f"OS倍率 : {os_power} 倍\n魔法石：{tokkou_dmg}\n魔法石倍率：{tokkou_add}倍\n"
                                       f"__**攻撃力 : {attack:.3f}\n**__")
-        #await sent_message.add_reaction('🚮')
-
-        while True:
-            try:
-                await bot.wait_for(event='reaction_add', timeout=20)
-
-            except asyncio.TimeoutError:
-                await sent_message.clear_reactions()
-                break
-               
-            await sent_message.delete(delay=2)
-            return 
 
     except:
         await ctx.send(f':thinking: {ctx.author.name}\n'
@@ -965,16 +953,7 @@ async def ask(ctx: commands.Context, *args):
             attack, tokkou_add = await tokkoulist(ctx, dmg, os_power, tokkou)
             ans_dmg = want_dmg / attack
             sent_message = await ctx.send(f"OS：{os}の時\n{want_dmg}を出すには最低でも火力が__**{ans_dmg:.3f}**__が必要です。")
-            #await sent_message.add_reaction('🚮')
 
-            while True:
-                try:
-                    await bot.wait_for(event='reaction_add', timeout=20)
-
-                except asyncio.TimeoutError:
-                    await sent_message.clear_reactions()
-                    break
-            return sent_message
 
         if str_os == '?':
             dmg = float(args[1])
@@ -1003,19 +982,7 @@ async def ask(ctx: commands.Context, *args):
                 else:
                     sent_message = await ctx.send(f"{dmg}で{want_dmg}を出すには\n__**OSは{i}以上**__とってください。")
 
-            #await sent_message.add_reaction('🚮')
 
-            while True:
-                try:
-                    await bot.wait_for(event='reaction_add', timeout=20)
-
-                except asyncio.TimeoutError:
-                    await sent_message.clear_reactions()
-                    break
-            
-            await sent_message.delete(delay=2)
-            return             
-            
     except:
         await ctx.send(f":thinking: {ctx.author.name}, `.ask [欲しい火力] [今の素ダメ] '?' (魔法石)`\n"
                        f"又は　`.ask [欲しい火力] '?' [今のOS] (魔法石)`\n"
@@ -1066,18 +1033,6 @@ async def cas(ctx: commands.Context, *args):
                                       f'魔法石 : {cas_stone_1}\n魔法石倍率 ： {xct}倍\n'
                                       f'__**最終的なCT : {ct:.1f}**__')
 
-        #await sent_message.add_reaction('🚮')
-
-        while True:
-            try:
-                await bot.wait_for(event='reaction_add', timeout=20)
-
-            except asyncio.TimeoutError:
-                await sent_message.clear_reactions()
-                break
-        
-        await sent_message.delete(delay=2)
-        return 
 
     except:
         await ctx.send(f':thinking: {ctx.author.name}, `.cas [元のCT] [CTPerk (0~10)] (魔法石)`')
