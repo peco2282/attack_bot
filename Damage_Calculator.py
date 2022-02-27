@@ -12,7 +12,7 @@ from re_definition import tokkou, ctcalc, tokkoulist, embed_list
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', help_command=None, intents=intents)
 now = datetime.now(pytz.timezone('Asia/Tokyo'))
-token = 'ODg0OTg2ODY2MjIxMzI2MzQ3.YTgePw.fNZi4vMTwhu_wkT3W7951RdgLoY'
+token = "Th1sIsN0t4T0k3n.B3cause.1fiShow1tB0tWillB3H4cked"
 
 emoji_selector = u'\U0000fe0f\U000020e3'
 emoji_1 = u'\N{DIGIT ONE}' + emoji_selector
